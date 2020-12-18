@@ -1,0 +1,16 @@
+{
+  "name": "playcanvas-csp-replacer",
+  "version": "1.0.0",
+  "description": "Replaces CSP rules in Playcanvas projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "edgar@snap.com",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.4.14",
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.0"
+  }
+}
