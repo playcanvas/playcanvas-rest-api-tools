@@ -9,6 +9,8 @@ Currently they are:
 * Archiving a project for offline backup and importing a branch into a new project
 * Archiving all branches in a project for backup
 
+All downloaded files can be found in `temp/out`.
+
 ## Requirements
 Install [Node JS (v12+)](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm)
 
@@ -78,22 +80,22 @@ As the API is [strict limited](https://developer.playcanvas.com/en/user-manual/a
 $ npm run archive-all
     ✔️ Requested branch list from Playcanvas
     ↪️ Processing branch list from Playcanvas
-    ↪️ Start archiving all branches...
+    ↪️ Start archiving all 2 branches...
+    ↪️ 1 of 2 branches: b1
     ✔️ Requested archive from Playcanvas
-    ↪️ Polling job  999999
-       job still running
-       will wait 1s and then retry
-    ↪️ Polling job  999999
+    ↪️ Polling job  99999
+    job still running
+    will wait 1s and then retry
+    ↪️ Polling job  99999
     ✔️ Job complete!
     ✔ Downloading zip https://somefilename.zip
-    ↪️ Slowing down to stay within API rate limts...
+    ↪️ 2 of 2 branches: b10
     ✔️ Requested archive from Playcanvas
-    ↪️ Polling job  999999
-       job still running
-       will wait 1s and then retry
-    ↪️ Polling job  999999
+    ↪️ Polling job  99999
+    job still running
+    will wait 1s and then retry
+    ↪️ Polling job  99999
     ✔️ Job complete!
-    ✔ Downloading zip https://somefilename.zip
-    ↪️ Slowing down to stay within API rate limts...
+    ✔ Downloading zip hhttps://somefilename.zip
     Success
 ```

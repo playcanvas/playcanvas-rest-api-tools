@@ -13,11 +13,11 @@ function readConfig() {
     return config;
 }
 
-function pollBuildJob(config, buildJobId) {
+function pollJob(config, jobId) {
     var self = this;
     return new Promise((resolve, reject) => {
-        console.log("↪️ Polling job ", buildJobId)
-        fetch('https://playcanvas.com/api/jobs/' + buildJobId, {
+        console.log("↪️ Polling job ", jobId)
+        fetch('https://playcanvas.com/api/jobs/' + jobId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,17 +34,17 @@ function pollBuildJob(config, buildJobId) {
                 reject(new Error(json.messages.join(';')))
             } else if (json.status == "running") {
                 console.log("   job still running");
-                return waitAndRetry(config, buildJobId, resolve);
+                return waitAndRetry(config, jobId, resolve);
             }
         })
     });
 }
 
-function waitAndRetry(config, buildJobId, callback) {
+function waitAndRetry(config, jobId, callback) {
     return new Promise(resolve => {
         console.log("   will wait 1s and then retry")
         sleep(1000)
-        .then(() => pollBuildJob(config, buildJobId))
+        .then(() => pollJob(config, jobId))
         .then(callback); // nested promises anyone?
     })
 }
@@ -81,7 +81,7 @@ function downloadProject(config, directory) {
             }
             return res.json();
         })
-        .then(buildJob => pollBuildJob(config, buildJob.id))
+        .then(buildJob => pollJob(config, buildJob.id))
         .then(json => {
             console.log("✔ Downloading zip", json.download_url);
             return fetch(json.download_url, {method: 'GET'})
@@ -118,7 +118,7 @@ function archiveProject(config, branchName, branchId, directory) {
             }
             return res.json();
         })
-        .then(buildJob => pollBuildJob(config, buildJob.id))
+        .then(buildJob => pollJob(config, buildJob.id))
         .then(json => {
             console.log("✔ Downloading zip", json.url);
             return fetch(json.url, {method: 'GET'})
@@ -137,4 +137,4 @@ function archiveProject(config, branchName, branchId, directory) {
 }
 
 
-module.exports = { readConfig, pollBuildJob, waitAndRetry, sleep, downloadProject, archiveProject};
+module.exports = { readConfig, sleep, downloadProject, archiveProject};

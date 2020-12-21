@@ -49,20 +49,33 @@ function processBranches (branches) {
 }
 
 async function archiveBranches(config, branchData) {
-    console.log("↪️ Start archiving all branches...");
+    console.log("↪️ Start archiving all " + branchData.length + " branches...");
+
+    // Stict rate limit is 5 requests a miniute so we will keep track of this
+    // and wait when need after 5 jobs
+    const maxJobs = 5;
+    const durationMs = 60 * 1000;
+    let startTime = Date.now();
+    let currentJobCount = 0;
 
     for (let i = 0; i < branchData.length; i++) {
         let branch = branchData[i];
-        let startTime = Date.now();
+        console.log("↪️ " + (i+1) + " of " + branchData.length + " branches: " + branch.name);
         await shared.archiveProject(config, branch.name, branch.id, "temp/out");
 
-        // Make sure we don't go other the strict rate limit
-        let jobDurationMs = (Date.now() - startTime);
-        let minDuration = 15000;
+        currentJobCount++;
 
-        if (jobDurationMs < minDuration) {
-            console.log("↪️ Slowing down to stay within API rate limts...");
-            await shared.sleep(minDuration - jobDurationMs);
+        if (currentJobCount === maxJobs) {
+            // Make sure we don't go other the strict rate limit
+            let jobDurationMs = (Date.now() - startTime);
+
+            if (jobDurationMs < durationMs) {
+                console.log("↪️ Waiting " + Math.floor(jobDurationMs / 1000) + "s to stay within API rate limits...");
+                await shared.sleep(durationMs - jobDurationMs);
+            }
+
+            startTime = Date.now();
+            currentJobCount = 0;
         }
     }
 }
