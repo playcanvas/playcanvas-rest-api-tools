@@ -1,36 +1,97 @@
 # playcanvas-rest-api-tools
 
-This is currently WIP :)
+This is a repo with a setup of tools to handle some of the more common needs of users with the REST API.
 
+Currently they are:
 
-## playcanvas-csp-replacer
-Downloads a PlayCanvas project, unzips it, adds [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) rules to it and re-packages it into a .zip file that can be uploaded to be served over HTTP.
-CSP rules are defined in `config.json` and the PlayCanvas Auth token is defined in `.env`
+* Downloading a build to self host
+* Downloading a build and add Content Security Policy (CSP) rules
+* Archiving a project for offline backup and importing a branch into a new project
+* Archiving all branches in a project for backup
 
-### Requirements
+## Requirements
 Install [Node JS (v12+)](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm)
 
-### Setup
+## Setup
 1. Clone this repo
 2. `mv .env.template .env` and add your PlayCanvas Auth Token in there
-3. `mv config.template.json config.json` and add your configuration in there (Project name, branch, scenes, CSP rules, etc. The parameters for the PlayCanvas object are explained in the [User Manual](https://developer.playcanvas.com/en/user-manual/api/app-download/)).
+3. `mv config.template.json config.json` and add your configuration in there (Project name, branch, scenes, CSP rules, etc. The parameters for the PlayCanvas object are explained in the [User Manual](https://developer.playcanvas.com/en/user-manual/api/)).
 4. `npm install`
 
+---
+
+## Downloading a build
+
+This uses the [Download App REST API](https://developer.playcanvas.com/en/user-manual/api/app-download/) to download a build from your project to self host.
+
 ### Usage
-1. `node csp`
+1. `npm run download`
 
 #### Example
 ```
-$ node index
+$ npm run download
     ✔️ Requested build from Playcanvas
-    ↪️ Polling build job
-    build job still running
-    will wait 1s and then retry
-    ↪️ Polling build job
-    ✔️ Build job complete!
-    ✔ Downloading zip
-    ✔️ Unzipping
+    ↪️ Polling job  99999
+        job still running
+        will wait 1s and then retry
+    ↪️ Polling job  99999
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefilename.zip
+    Success somefilename_Download.zip
+```
+
+## Downloading a build and add CSP rules
+
+This uses the [Download App REST API](https://developer.playcanvas.com/en/user-manual/api/app-download/) to download a build from your project to self host.
+
+It will unzip the build, add the [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) rules to the `index.html` file and rezip the project.
+
+### Usage
+1. `npm run csp`
+
+#### Example
+```
+$ npm run csp
+    ✔️ Requested build from Playcanvas
+    ↪️ Polling job  99999
+       job still running
+      will wait 1s and then retry
+    ↪️ Polling job  99999
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefilename.zip
     ✔️ Adding CSP
     ✔️ Zipping it all back again
-    ✔️... Done!
+    ✔️... Done! somefilename_WithCSP.zip
+```
+
+## Archiving a project
+
+This uses the [Archive Project REST API](https://developer.playcanvas.com/en/user-manual/api/project-archive/) to download an archive of the project that can be imported into a new PlayCanvas project.
+
+### Usage
+1. `npm run archive`
+
+#### Example
+```
+$ npm run archive-all
+    ✔️ Requested branch list from Playcanvas
+    ↪️ Processing branch list from Playcanvas
+    ↪️ Start archiving all branches...
+    ✔️ Requested archive from Playcanvas
+    ↪️ Polling job  999999
+       job still running
+       will wait 1s and then retry
+    ↪️ Polling job  999999
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefilename.zip
+    ↪️ Slowing down to stay within API rate limts...
+    ✔️ Requested archive from Playcanvas
+    ↪️ Polling job  999999
+       job still running
+       will wait 1s and then retry
+    ↪️ Polling job  999999
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefilename.zip
+    ↪️ Slowing down to stay within API rate limts...
+    Success
 ```

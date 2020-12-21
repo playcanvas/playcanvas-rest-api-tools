@@ -16,7 +16,7 @@ function readConfig() {
 function pollBuildJob(config, buildJobId) {
     var self = this;
     return new Promise((resolve, reject) => {
-        console.log("↪️ Polling build job ", buildJobId)
+        console.log("↪️ Polling job ", buildJobId)
         fetch('https://playcanvas.com/api/jobs/' + buildJobId, {
             method: 'GET',
             headers: {
@@ -27,13 +27,13 @@ function pollBuildJob(config, buildJobId) {
         .then(res => res.json())
         .then((json) => {
             if (json.status == "complete") {
-                console.log("✔️ Build job complete!",)
+                console.log("✔️ Job complete!",)
                 resolve(json.data)
             } else if (json.status == "error") {
-                console.log(" build job error ", json.messages)
+                console.log("   job error ", json.messages)
                 reject(new Error(json.messages.join(';')))
             } else if (json.status == "running") {
-                console.log("   build job still running");
+                console.log("   job still running");
                 return waitAndRetry(config, buildJobId, resolve);
             }
         })
@@ -101,7 +101,7 @@ function downloadProject(config, directory) {
 
 function archiveProject(config, branchName, branchId, directory) {
     return new Promise((resolve, reject) => {
-        console.log("✔️ Requested build from Playcanvas")
+        console.log("✔️ Requested archive from Playcanvas")
         fetch('https://playcanvas.com/api/projects/' + config.playcanvas.project_id + '/export', {
             method: 'POST',
             body: JSON.stringify({
