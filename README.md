@@ -66,6 +66,25 @@ $ npm run csp
     ✔️... Done! somefilename_WithCSP.zip
 ```
 
+## Archiving a project
+This uses the [Archive Project REST API](https://developer.playcanvas.com/en/user-manual/api/project-archive/) to archive a single branch that cna be imported into a new project on PlayCanvas.
+
+### Usage
+1. `npm run archive`
+
+#### Example
+```
+$ npm run arhive
+    ✔️ Requested archive from Playcanvas
+    ↪️ Polling job  99999
+       job still running
+       will wait 1s and then retry
+    ↪️ Polling job  99999
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefilename.zip
+    Success somefilename_Download.zip
+```
+
 ## Archiving all branches in a project
 
 This uses the [Archive Project](https://developer.playcanvas.com/en/user-manual/api/project-archive/) and [List Branches](https://developer.playcanvas.com/en/user-manual/api/branch-list/) REST APIs to download all open branches in a project.
