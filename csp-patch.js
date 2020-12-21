@@ -46,7 +46,7 @@ function addCspMetadata(indexLocation) {
 function zipProject(rootFolder) {
     return new Promise((resolve, reject) => {
         console.log("✔️ Zipping it all back again")
-        let output = path.resolve(__dirname, 'temp/out/'+config.playcanvas.project_name+'_WithCSP.zip');
+        let output = path.resolve(__dirname, 'temp/out/'+config.playcanvas.name+'_WithCSP.zip');
         var zip = new Zip();
         zip.addLocalFolder(rootFolder);
         if (!fs.existsSync(path.dirname(output))) {

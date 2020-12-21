@@ -27,7 +27,7 @@ $ node index
     build job still running
     will wait 1s and then retry
     ↪️ Polling build job
-    ✔️build job complete!
+    ✔️ Build job complete!
     ✔ Downloading zip
     ✔️ Unzipping
     ✔️ Adding CSP

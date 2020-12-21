@@ -16,7 +16,7 @@ function readConfig() {
 function pollBuildJob(config, buildJobId) {
     var self = this;
     return new Promise((resolve, reject) => {
-        console.log(" ↪️Polling build job ", buildJobId)
+        console.log("↪️ Polling build job ", buildJobId)
         fetch('https://playcanvas.com/api/jobs/' + buildJobId, {
             method: 'GET',
             headers: {
@@ -33,7 +33,7 @@ function pollBuildJob(config, buildJobId) {
                 console.log(" build job error ", json.messages)
                 reject(new Error(json.messages.join(';')))
             } else if (json.status == "running") {
-                console.log(" build job still running");
+                console.log("   build job still running");
                 return waitAndRetry(config, buildJobId, resolve);
             }
         })
@@ -42,7 +42,7 @@ function pollBuildJob(config, buildJobId) {
 
 function waitAndRetry(config, buildJobId, callback) {
     return new Promise(resolve => {
-        console.log(" will wait 1s and then retry")
+        console.log("   will wait 1s and then retry")
         sleep(1000)
         .then(() => pollBuildJob(config, buildJobId))
         .then(callback); // nested promises anyone?
@@ -88,7 +88,7 @@ function downloadProject(config, directory) {
         })
         .then(res => res.buffer())
         .then(buffer => {
-            let output = path.resolve(__dirname, directory + "/" + config.playcanvas.project_name + '.zip');
+            let output = path.resolve(__dirname, directory + "/" + config.playcanvas.name + '_Download.zip');
             if (!fs.existsSync(path.dirname(output))) {
                 fs.mkdirSync(path.dirname(output), {recursive:true});
             }
@@ -99,4 +99,42 @@ function downloadProject(config, directory) {
     });
 }
 
-module.exports = { readConfig, pollBuildJob, waitAndRetry, sleep, downloadProject};
+function archiveProject(config, branchName, branchId, directory) {
+    return new Promise((resolve, reject) => {
+        console.log("✔️ Requested build from Playcanvas")
+        fetch('https://playcanvas.com/api/projects/' + config.playcanvas.project_id + '/export', {
+            method: 'POST',
+            body: JSON.stringify({
+                "branch_id": branchId
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + config.authToken
+            }
+        })
+        .then(res => {
+            if (res.status !== 200) {
+                throw new Error("Error: status code " + res.status);
+            }
+            return res.json();
+        })
+        .then(buildJob => pollBuildJob(config, buildJob.id))
+        .then(json => {
+            console.log("✔ Downloading zip", json.url);
+            return fetch(json.url, {method: 'GET'})
+        })
+        .then(res => res.buffer())
+        .then(buffer => {
+            let output = path.resolve(__dirname, directory + "/" + config.playcanvas.name + '_Archive_' + branchName + '.zip');
+            if (!fs.existsSync(path.dirname(output))) {
+                fs.mkdirSync(path.dirname(output), {recursive:true});
+            }
+            fs.writeFileSync(output, buffer, 'binary')
+            resolve(output);
+        })
+        .catch(reject);
+    });
+}
+
+
+module.exports = { readConfig, pollBuildJob, waitAndRetry, sleep, downloadProject, archiveProject};

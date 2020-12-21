@@ -5,6 +5,8 @@
   "scripts": {
     "download": "node download-project.js",
     "csp": "node csp-patch.js",
+    "archive": "node archive-project.js",
+    "archive-all": "node archive-project-all.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "syau@snap.com",
