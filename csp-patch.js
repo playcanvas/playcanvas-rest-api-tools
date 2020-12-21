@@ -74,7 +74,7 @@ function getCspMetadataTag() {
     return tag.replace("{0}", content);
 }
 
-shared.downloadProject(config)
+shared.downloadProject(config, "temp/downloads")
     .then(unzipProject)
     .then(addCspMetadata)
     .then(zipProject)

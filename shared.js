@@ -53,24 +53,34 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function downloadProject(config) {
+function downloadProject(config, directory) {
     return new Promise((resolve, reject) => {
         console.log("✔️ Requested build from Playcanvas")
         fetch('https://playcanvas.com/api/apps/download', {
             method: 'POST',
             body: JSON.stringify({
                 "project_id": parseInt(config.playcanvas.project_id),
-                "name": config.playcanvas.project_name,
+                "name": config.playcanvas.name,
                 "scenes": config.playcanvas.scenes,
+                "branch_id": config.playcanvas.branch_id,
+                "description": config.playcanvas.description,
                 "preload_bundle": config.playcanvas.preload_bundle,
-                "branch_id": config.playcanvas.branch_id
+                "version": config.playcanvas.version,
+                "release_notes": config.playcanvas.release_notes,
+                "scripts_concatenate": config.playcanvas.scripts_concatenate,
+                "optimize_scene_format": config.playcanvas.optimize_scene_format
             }),
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + config.authToken
             }
         })
-        .then(res => res.json())
+        .then(res => {
+            if (res.status !== 201) {
+                throw new Error("Error: status code " + res.status);
+            }
+            return res.json();
+        })
         .then(buildJob => pollBuildJob(config, buildJob.id))
         .then(json => {
             console.log("✔ Downloading zip", json.download_url);
@@ -78,7 +88,7 @@ function downloadProject(config) {
         })
         .then(res => res.buffer())
         .then(buffer => {
-            let output = path.resolve(__dirname, 'temp/downloads/'+config.playcanvas.project_name+'.zip');
+            let output = path.resolve(__dirname, directory + "/" + config.playcanvas.project_name + '.zip');
             if (!fs.existsSync(path.dirname(output))) {
                 fs.mkdirSync(path.dirname(output), {recursive:true});
             }

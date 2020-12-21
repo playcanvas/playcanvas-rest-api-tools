@@ -6,7 +6,7 @@ const shared = require('./shared');
 
 const config = shared.readConfig();
 
-shared.downloadProject(config)
-    .then((output) => console.log("Success"))
+shared.downloadProject(config, "temp/out")
+    .then((output) => console.log("Success", output))
     .catch(err => console.log("Error", err));
 

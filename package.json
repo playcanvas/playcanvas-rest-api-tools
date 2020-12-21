@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A suite of node scripts to use the PlayCanvas REST API",
   "scripts": {
-    "dl-project": "node download-project.js",
+    "download": "node download-project.js",
     "csp": "node csp-patch.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
