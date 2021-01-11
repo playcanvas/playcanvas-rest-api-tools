@@ -27,37 +27,6 @@ function unzipProject(zipLocation) {
     });
 }
 
-function addCspMetadata(indexLocation) {
-    return new Promise((resolve, reject) => {
-        console.log("✔️ Adding CSP");
-        var indexContents = fs.readFileSync(indexLocation, 'utf-8');
-        var headStart = indexContents.indexOf("<head>");
-        if (headStart < 0) {
-            reject(new Error('Could not find head tag in index.html', indexLocation, indexContents));
-        } else {
-            var cspMetadata = getCspMetadataTag();
-            var indexWithCsp = indexContents.replace("<head>", "<head>\n\t"+cspMetadata);
-            fs.writeFileSync(indexLocation, indexWithCsp);
-            resolve(path.dirname(indexLocation));
-        }
-    });
-}
-
-function getCspMetadataTag() {
-    var tag = "<meta http-equiv=\"Content-Security-Policy\" content=\"{0}\" />"
-    var content = "";
-    for (var key in config.csp) {
-        content += key;
-        for (var i in config.csp[key]) {
-            var value = config.csp[key][i];
-            content += " " + value
-        }
-        content += "; "
-    }
-
-    return tag.replace("{0}", content);
-}
-
 function inlineAssets(projectPath) {
     return new Promise((resolve, reject) => {
         var indexLocation = path.resolve(projectPath, "index.html");
@@ -149,38 +118,76 @@ function inlineAssets(projectPath) {
             fs.writeFileSync(location, contents);
         })();
 
+        // 6. Remove __loading__.js.
+        (function() {
+            console.log("↪️ Remove __loading__.js");
+            indexContents = indexContents.replace('    <script src="__loading__.js"></script>\n', '');
+        })();
 
-        // 6. Remove the usage of logo.png from __loading__.js.
+
         // 7. In __settings__.js, change the SCENE_PATH to a base64 string of the scene file.
         // 8. In __settings__.js, change the CONFIG_FILENAME to a base64 string of the config.json file.
-        // 9. Replace references to __settings__.js, __start__.js and __loading__.js in index.html with contents of those files.
+        (function() {
+            console.log("↪️ Base64 encode the scene JSON and config JSON files");
+
+            var location = path.resolve(projectPath, "__settings__.js");
+            var contents = fs.readFileSync(location, 'utf-8');
+
+            var jsonToBase64 = function(regex) {
+                var match = contents.match(regex);
+
+                // Assume match
+                var filepath = path.resolve(projectPath, match[1]);
+                var jsonContents = Uint8Array.from(fs.readFileSync(filepath));
+                var b64 = base64js.fromByteArray(jsonContents);
+
+                contents = contents.replace(match[1], "data:application/json;base64," + b64);
+            };
+
+            jsonToBase64(/SCENE_PATH = "(.*)";/i);
+            jsonToBase64(/CONFIG_FILENAME = "(.*)"/i);
+
+            fs.writeFileSync(location, contents);
+        })();
+
+        // 9. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
+        // 10. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
+        (function() {
+            console.log("↪️ Inline JS scripts in index.html");
+
+            var urlRegex = /<script src="(.*)"><\/script>/g;
+            var urlMatches = [...indexContents.matchAll(urlRegex)];
+
+            urlMatches.forEach(element => {
+                var url = element[1];
+                var filepath = path.resolve(projectPath, url);
+                var fileContent = fs.readFileSync(filepath);
+
+                indexContents = indexContents.replace(element[0], '<script>' + fileContent + '</script>');
+            });
+        })();
 
         fs.writeFileSync(indexLocation, indexContents);
         resolve(indexLocation);
-
-        // var filepath = path.resolve(tempFolder, 'files/assets/3371285/1/sfx_hit.mp3');
-        // var ba = Uint8Array.from(fs.readFileSync(filepath));
-        // var b64 = base64js.fromByteArray(ba);
-        // console.log(b64);
-        // resolve();
     });
 }
+
+function copyHtmlFile (inPath) {
+    return new Promise((resolve, reject) => {
+        console.log('✔️ Finishing up');
+        var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + 'index.html');
+        fs.createReadStream(inPath).pipe(fs.createWriteStream(outputPath));
+        resolve(outputPath);
+    });
+}
+
 
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
 
-// shared.downloadProject(config, "temp/downloads")
-//     .then(unzipProject)
-//     .then(addCspMetadata)
-//     //.then(zipProject)
-//     //.then(outputZip => console.log("Success", outputZip))
-//     .catch(err => console.log("Error", err));
-
-var tempFolder = path.resolve("temp/downloads/contents/");
-var indexFile = path.resolve(tempFolder, 'index.html');
-
-var zipLocation = path.resolve(__dirname, "temp/downloads" + "/" + config.playcanvas.name + '_Download.zip')
-
-unzipProject(zipLocation)
-.then(inlineAssets)
+shared.downloadProject(config, "temp/downloads")
+    .then(unzipProject)
+    .then(inlineAssets)
+    .then(copyHtmlFile)
+    .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
