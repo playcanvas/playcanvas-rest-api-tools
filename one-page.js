@@ -175,7 +175,7 @@ function inlineAssets(projectPath) {
 function copyHtmlFile (inPath) {
     return new Promise((resolve, reject) => {
         console.log('✔️ Finishing up');
-        var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + 'index.html');
+        var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.html');
         fs.createReadStream(inPath).pipe(fs.createWriteStream(outputPath));
         resolve(outputPath);
     });
