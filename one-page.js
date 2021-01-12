@@ -174,6 +174,19 @@ function inlineAssets(projectPath) {
                 fs.writeFileSync(location, contents);
             })();
 
+            // Patch __start__.js to fix browser stretching on first load
+            // https://github.com/playcanvas/engine/issues/2386#issuecomment-682053241
+            (function() {
+                console.log("↪️ Patching __start__.js");
+                var location = path.resolve(projectPath, "__start__.js");
+                var contents = fs.readFileSync(location, 'utf-8');
+
+                var regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
+                contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+
+                fs.writeFileSync(location, contents);
+            })();
+
             // 9. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
             // 10. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
             await (async function() {

@@ -151,6 +151,7 @@ $ npm run one-page
     ↪️ Base64 encode all urls in config.json
     ↪️ Remove __loading__.js
     ↪️ Base64 encode the scene JSON and config JSON files
+    ↪️ Patching __start__.js
     ↪️ Inline JS scripts in index.html
     ✔️ Finishing up
     Success someProject.html
