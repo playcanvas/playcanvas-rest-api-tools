@@ -67,7 +67,7 @@ $ npm run csp
 ```
 
 ## Archiving a project
-This uses the [Archive Project REST API](https://developer.playcanvas.com/en/user-manual/api/project-archive/) to archive a single branch that cna be imported into a new project on PlayCanvas.
+This uses the [Archive Project REST API](https://developer.playcanvas.com/en/user-manual/api/project-archive/) to archive a single branch that can be imported into a new project on PlayCanvas.
 
 ### Usage
 1. `npm run archive`
@@ -117,4 +117,41 @@ $ npm run archive-all
     ✔️ Job complete!
     ✔ Downloading zip hhttps://somefilename.zip
     Success
+```
+
+## Converting a project into a single HTML file
+
+This uses the [Download App REST API](https://developer.playcanvas.com/en/user-manual/api/app-download/) to download a build from your project to self host.
+
+The script will then unzip the project, convert assets, scripts, etc into Base64 and embed them into the index.html with the intention to be used for some playable ads formats.
+
+Once finished, it will copy the HTML file to the out folder.
+
+There are some limitations:
+- Modules are not supported (Basis and Ammo)
+- Texture compression formats are not supported
+
+### Usage
+1. `npm run one-page`
+
+#### Example
+```
+$ npm run one-page
+    ✔️ Requested build from Playcanvas
+    ↪️ Polling job  710439
+    job still running
+    will wait 1s and then retry
+    ↪️ Polling job  710439
+    ✔️ Job complete!
+    ✔ Downloading zip someBuild.zip
+    ✔️ Unzipping  someBuild.zip
+    ↪️ Removing manifest.json
+    ↪️ Removing __modules__.js
+    ↪️ Inlining style.css into index.html
+    ↪️ Base64 encode all urls in config.json
+    ↪️ Remove __loading__.js
+    ↪️ Base64 encode the scene JSON and config JSON files
+    ↪️ Inline JS scripts in index.html
+    ✔️ Finishing up
+    Success someProject.html
 ```
