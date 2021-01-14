@@ -62,6 +62,7 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 indexContents = indexContents.replace('<style></style>', '<style>' + contents + '</style>');
+                indexContents = indexContents.replace('    <link rel="stylesheet" type="text/css" href="styles.css">\n', '');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
@@ -78,7 +79,7 @@ function inlineAssets(projectPath) {
 
                 // Base64 encode all files
                 for (const element of urlMatches) {
-                    var url = element[1];
+                    var url = unescape(element[1]);
                     var urlSplit = url.split('.');
                     var extension = urlSplit[urlSplit.length - 1];
 
@@ -117,6 +118,10 @@ function inlineAssets(projectPath) {
                             mimeprefix = "data:application/octet-stream";
                         } break;
 
+                        case "mp4": {
+                            mimeprefix = "data:video/mp4";
+                        } break;
+
                         case "js": {
                             mimeprefix = "data:text/javascript";
                             fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
@@ -132,7 +137,8 @@ function inlineAssets(projectPath) {
                         b64 = base64js.fromByteArray(ba);
                     }
 
-                    contents = contents.replace(url, mimeprefix + ';base64,' + b64);
+                    // As we are using an escaped URL, we will search using the original URL
+                    contents = contents.replace(element[1], mimeprefix + ';base64,' + b64);
                 };
 
                 // Remove the hashes
