@@ -73,13 +73,23 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "config.json");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                // Get all the matches
-                var urlRegex = /"url":"(files.*?)"}/g;
-                var urlMatches = [...contents.matchAll(urlRegex)];
+                // Get the assets and Base64 all the files
 
-                // Base64 encode all files
-                for (const element of urlMatches) {
-                    var url = unescape(element[1]);
+                var configJson = JSON.parse(contents);
+                var assets = configJson.assets;
+
+
+                for (const [key, asset] of Object.entries(assets)) {
+                    if (!Object.prototype.hasOwnProperty.call(assets, key)) {
+                        continue;
+                    }
+
+                    // If it's not a file, we can ignore
+                    if (!asset.file) {
+                        continue;
+                    }
+
+                    var url = unescape(asset.file.url);
                     var urlSplit = url.split('.');
                     var extension = urlSplit[urlSplit.length - 1];
 
@@ -115,7 +125,9 @@ function inlineAssets(projectPath) {
                         } break;
 
                         case "json": {
-                            mimeprefix = "data:application/octet-stream";
+                            if (asset.type !== 'model' && asset.type !== 'animation') {
+                                mimeprefix = "data:application/json";
+                            }
                         } break;
 
                         case "mp4": {
@@ -138,14 +150,13 @@ function inlineAssets(projectPath) {
                     }
 
                     // As we are using an escaped URL, we will search using the original URL
-                    contents = contents.replace(element[1], mimeprefix + ';base64,' + b64);
+                    asset.file.url = mimeprefix + ';base64,' + b64;
+
+                    // Remove the hash to prevent appending to the URL
+                    asset.file.hash = "";
                 };
 
-                // Remove the hashes
-                var hashRegex = /"hash":"(.{32})"/g;
-                contents = contents.replace(hashRegex, '"hash":""');
-
-                fs.writeFileSync(location, contents);
+                fs.writeFileSync(location, JSON.stringify(configJson));
             })();
 
             // 6. Remove __loading__.js.
@@ -228,8 +239,11 @@ function copyHtmlFile (inPath) {
 
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
-shared.downloadProject(config, "temp/downloads")
-    .then(unzipProject)
+//var t = "/Users/stevenyau/Snapchat/Dev/playcanvas-rest-api-tools/temp/downloads/File Ad Audit_Download.zip";
+ shared.downloadProject(config, "temp/downloads")
+     .then(unzipProject)
+
+//unzipProject(t)
     .then(inlineAssets)
     .then(copyHtmlFile)
     .then(outputHtml => console.log("Success", outputHtml))
