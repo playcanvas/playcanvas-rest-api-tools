@@ -239,11 +239,8 @@ function copyHtmlFile (inPath) {
 
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
-//var t = "/Users/stevenyau/Snapchat/Dev/playcanvas-rest-api-tools/temp/downloads/File Ad Audit_Download.zip";
- shared.downloadProject(config, "temp/downloads")
-     .then(unzipProject)
-
-//unzipProject(t)
+shared.downloadProject(config, "temp/downloads")
+    .then(unzipProject)
     .then(inlineAssets)
     .then(copyHtmlFile)
     .then(outputHtml => console.log("Success", outputHtml))
