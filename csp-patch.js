@@ -8,28 +8,11 @@ const shared = require('./shared');
 
 const config = shared.readConfig();
 
-function unzipProject(zipLocation) {
-    return new Promise((resolve, reject) => {
-        console.log('✔️ Unzipping ', zipLocation);
-        var zipFile = new Zip(zipLocation);
-        try {
-            var tempFolder = path.resolve(path.dirname(zipLocation), 'contents/');
-            if (fs.existsSync(tempFolder)) {
-                fs.rmdirSync(tempFolder, {recursive:true});
-            }
-            fs.mkdirSync(tempFolder);
-            zipFile.extractAllTo(tempFolder, true);
-            var outputFile = path.resolve(tempFolder, 'index.html');
-            resolve(outputFile);
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
 
-function addCspMetadata(indexLocation) {
+function addCspMetadata(projectLocation) {
     return new Promise((resolve, reject) => {
         console.log("✔️ Adding CSP");
+        var indexLocation = path.resolve(projectLocation, 'index.html');
         var indexContents = fs.readFileSync(indexLocation, 'utf-8');
         var headStart = indexContents.indexOf("<head>");
         if (headStart < 0) {
@@ -40,22 +23,6 @@ function addCspMetadata(indexLocation) {
             fs.writeFileSync(indexLocation, indexWithCsp);
             resolve(path.dirname(indexLocation));
         }
-    });
-}
-
-function zipProject(rootFolder) {
-    return new Promise((resolve, reject) => {
-        console.log("✔️ Zipping it all back again")
-        let output = path.resolve(__dirname, 'temp/out/'+config.playcanvas.name+'_WithCSP.zip');
-        var zip = new Zip();
-        zip.addLocalFolder(rootFolder);
-        if (!fs.existsSync(path.dirname(output))) {
-            fs.mkdirSync(path.dirname(output));
-        }
-        zip.writeZip(output);
-        fs.rmdirSync(rootFolder, {recursive:true});
-        console.log("✔️... Done!", output)
-        resolve(output);
     });
 }
 
@@ -75,8 +42,8 @@ function getCspMetadataTag() {
 }
 
 shared.downloadProject(config, "temp/downloads")
-    .then(unzipProject)
+    .then((zipLocation) => shared.unzipProject(zipLocation, "contents/"))
     .then(addCspMetadata)
-    .then(zipProject)
+    .then((rootFolder) => shared.zipProject(rootFolder, 'temp/out/'+config.playcanvas.name+'_WithCSP.zip'))
     .then(outputZip => console.log("Success", outputZip))
     .catch(err => console.log("Error", err));

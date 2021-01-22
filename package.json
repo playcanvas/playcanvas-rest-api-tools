@@ -8,7 +8,8 @@
     "archive": "node archive-project.js",
     "archive-all": "node archive-project-all.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "one-page": "node one-page.js"
+    "one-page": "node one-page.js",
+    "no-minify": "node no-minify.js"
   },
   "author": "syau@snap.com",
   "license": "MIT",

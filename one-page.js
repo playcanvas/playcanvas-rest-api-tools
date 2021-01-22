@@ -11,24 +11,6 @@ const shared = require('./shared');
 
 const config = shared.readConfig();
 
-function unzipProject(zipLocation) {
-    return new Promise((resolve, reject) => {
-        console.log('✔️ Unzipping ', zipLocation);
-        var zipFile = new Zip(zipLocation);
-        try {
-            var tempFolder = path.resolve(path.dirname(zipLocation), 'contents/');
-            if (fs.existsSync(tempFolder)) {
-                fs.rmdirSync(tempFolder, {recursive:true});
-            }
-            fs.mkdirSync(tempFolder);
-            zipFile.extractAllTo(tempFolder, true);
-            resolve(tempFolder);
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
-
 function inlineAssets(projectPath) {
     return new Promise((resolve, reject) => {
         (async function() {
@@ -240,7 +222,7 @@ function copyHtmlFile (inPath) {
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
 shared.downloadProject(config, "temp/downloads")
-    .then(unzipProject)
+    .then((zipLocation) => shared.unzipProject(zipLocation, 'contents') )
     .then(inlineAssets)
     .then(copyHtmlFile)
     .then(outputHtml => console.log("Success", outputHtml))
