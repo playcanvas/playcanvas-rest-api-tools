@@ -68,6 +68,7 @@ function downloadProject(config, directory) {
                 "version": config.playcanvas.version,
                 "release_notes": config.playcanvas.release_notes,
                 "scripts_concatenate": config.playcanvas.scripts_concatenate,
+                "scripts_minify": config.playcanvas.scripts_minify,
                 "optimize_scene_format": config.playcanvas.optimize_scene_format
             }),
             headers: {

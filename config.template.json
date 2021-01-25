@@ -10,6 +10,7 @@
         "release_notes": "",
         "scripts_concatenate": true,
         "scripts_sourcemaps": false,
+        "scripts_minify": true,
         "optimize_scene_format": false
     },
     "csp": {
