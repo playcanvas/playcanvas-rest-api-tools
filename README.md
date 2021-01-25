@@ -156,34 +156,3 @@ $ npm run one-page
     ✔️ Finishing up
     Success someProject.html
 ```
-
-## Concatenating scripts without minification
-
-This uses the [Download App REST API](https://developer.playcanvas.com/en/user-manual/api/app-download/) to download a build from your project to self host.
-
-The script will then unzip the project, concatenate the scripts into a single file and rezip the project into the out folder.
-
-### Usage
-1. `npm run no-minify`
-
-#### Example
-```
-$ npm run no-minify
-    ✔️ Requested build from Playcanvas
-    ↪️ Polling job  34857
-    ✔️ Job complete!
-    ✔ Downloading zip someProject.zip
-    ✔️ Unzipping  someProject.zip
-    ↪️ Concatenating scripts
-        Processing post-effect.js
-        Processing ui.js
-        Processing blobs.js
-        Processing flame-animate.js
-        Processing monsterize.js
-        Processing trailer.js
-        Processing material.js
-        Processing movement.js
-        Processing video-texture.js
-    ✔️ Zipping it all back again
-    Success someProject.zip
-```
