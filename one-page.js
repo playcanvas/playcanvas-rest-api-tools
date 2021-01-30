@@ -5,8 +5,6 @@ const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
-require('css.escape');
-
 
 const shared = require('./shared');
 
