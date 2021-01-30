@@ -5,6 +5,7 @@ const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
+require('css.escape');
 
 
 const shared = require('./shared');
@@ -20,7 +21,8 @@ function inlineAssets(projectPath) {
             // 1. Remove manifest.json and the reference in the index.html
             (function() {
                 console.log("↪️ Removing manifest.json");
-                indexContents = replaceString(indexContents, '    <link rel="manifest" href="manifest.json">\n', '');
+                var regex = / *<link rel="manifest" href="manifest\.json">\n/;
+                indexContents = indexContents.replace(regex, '');
             })();
 
             // 2. Remove __modules__.js and the reference in the index.html assuming we aren’t using modules for playable ads.
@@ -31,7 +33,7 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
-                contents = replaceString(contents, regex, 'configure();');
+                contents = contents.replace(regex, 'configure();');
                 fs.writeFileSync(location, contents);
             })();
 
@@ -43,8 +45,10 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "styles.css");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                indexContents = replaceString(indexContents, '<style></style>', '<style>' + contents + '</style>');
-                indexContents = replaceString(indexContents, '    <link rel="stylesheet" type="text/css" href="styles.css">\n', '');
+                indexContents = indexContents.replace('<style></style>', '<style>' + contents + '</style>');
+
+                var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
+                indexContents = indexContents.replace(styleRegex, '');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
@@ -144,7 +148,8 @@ function inlineAssets(projectPath) {
             // 6. Remove __loading__.js.
             (function() {
                 console.log("↪️ Remove __loading__.js");
-                indexContents = replaceString(indexContents, '    <script src="__loading__.js"></script>\n', '');
+                var regex = / *<script src="__loading__\.js"><\/script>\n/;
+                indexContents = indexContents.replace(regex, '');
             })();
 
 
@@ -181,7 +186,7 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
-                contents = replaceString(contents, regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+                contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
 
                 fs.writeFileSync(location, contents);
             })();
