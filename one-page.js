@@ -45,10 +45,13 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "styles.css");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                indexContents = indexContents.replace('<style></style>', '<style>' + contents + '</style>');
-
+                indexContents = indexContents.replace('<style></style>', '');
+                
+                var b64 = btoa(unescape(encodeURIComponent(contents)));
                 var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
-                indexContents = indexContents.replace(styleRegex, '');
+                indexContents = indexContents.replace(
+                    styleRegex, 
+                    '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
