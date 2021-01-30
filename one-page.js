@@ -1,11 +1,10 @@
-const fetch = require('node-fetch')
-const dotenv = require('dotenv')
 const fs = require('fs')
 const path = require('path')
 const Zip = require('adm-zip');
 const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
+const replaceString = require('replace-string');
 
 const shared = require('./shared');
 
@@ -20,7 +19,8 @@ function inlineAssets(projectPath) {
             // 1. Remove manifest.json and the reference in the index.html
             (function() {
                 console.log("↪️ Removing manifest.json");
-                indexContents = indexContents.replace('    <link rel="manifest" href="manifest.json">\n', '');
+                var regex = / *<link rel="manifest" href="manifest\.json">\n/;
+                indexContents = indexContents.replace(regex, '');
             })();
 
             // 2. Remove __modules__.js and the reference in the index.html assuming we aren’t using modules for playable ads.
@@ -43,8 +43,13 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "styles.css");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                indexContents = indexContents.replace('<style></style>', '<style>' + contents + '</style>');
-                indexContents = indexContents.replace('    <link rel="stylesheet" type="text/css" href="styles.css">\n', '');
+                indexContents = indexContents.replace('<style></style>', '');
+                
+                var b64 = btoa(unescape(encodeURIComponent(contents)));
+                var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
+                indexContents = indexContents.replace(
+                    styleRegex, 
+                    '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
@@ -144,7 +149,8 @@ function inlineAssets(projectPath) {
             // 6. Remove __loading__.js.
             (function() {
                 console.log("↪️ Remove __loading__.js");
-                indexContents = indexContents.replace('    <script src="__loading__.js"></script>\n', '');
+                var regex = / *<script src="__loading__\.js"><\/script>\n/;
+                indexContents = indexContents.replace(regex, '');
             })();
 
 
@@ -164,7 +170,7 @@ function inlineAssets(projectPath) {
                     var jsonContents = Uint8Array.from(fs.readFileSync(filepath));
                     var b64 = base64js.fromByteArray(jsonContents);
 
-                    contents = contents.replace(match[1], "data:application/json;base64," + b64);
+                    contents = replaceString(contents, match[1], "data:application/json;base64," + b64);
                 };
 
                 jsonToBase64(/SCENE_PATH = "(.*)";/i);
@@ -198,8 +204,13 @@ function inlineAssets(projectPath) {
                     var url = element[1];
                     var filepath = path.resolve(projectPath, url);
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
-                    fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
-                    indexContents = indexContents.replace(element[0], '<script>' + fileContent + '</script>');
+
+                    // If it is already minified then don't try to minify it again
+                    if (!url.endsWith('.min.js')) {
+                        fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
+                    }
+
+                    indexContents = replaceString(indexContents, element[0], '<script>' + fileContent + '</script>');
                 };
             })();
 
@@ -213,6 +224,10 @@ function copyHtmlFile (inPath) {
     return new Promise((resolve, reject) => {
         console.log('✔️ Finishing up');
         var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.html');
+        if (!fs.existsSync(path.dirname(outputPath))) {
+            fs.mkdirSync(path.dirname(outputPath), {recursive:true});
+        }
+
         fs.createReadStream(inPath).pipe(fs.createWriteStream(outputPath));
         resolve(outputPath);
     });
