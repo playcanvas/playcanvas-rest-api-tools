@@ -1,11 +1,11 @@
-const fetch = require('node-fetch')
-const dotenv = require('dotenv')
 const fs = require('fs')
 const path = require('path')
 const Zip = require('adm-zip');
 const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
+const replaceString = require('replace-string');
+
 
 const shared = require('./shared');
 
@@ -20,7 +20,7 @@ function inlineAssets(projectPath) {
             // 1. Remove manifest.json and the reference in the index.html
             (function() {
                 console.log("↪️ Removing manifest.json");
-                indexContents = indexContents.replace('    <link rel="manifest" href="manifest.json">\n', '');
+                indexContents = replaceString(indexContents, '    <link rel="manifest" href="manifest.json">\n', '');
             })();
 
             // 2. Remove __modules__.js and the reference in the index.html assuming we aren’t using modules for playable ads.
@@ -31,7 +31,7 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
-                contents = contents.replace(regex, 'configure();');
+                contents = replaceString(contents, regex, 'configure();');
                 fs.writeFileSync(location, contents);
             })();
 
@@ -43,8 +43,8 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "styles.css");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                indexContents = indexContents.replace('<style></style>', '<style>' + contents + '</style>');
-                indexContents = indexContents.replace('    <link rel="stylesheet" type="text/css" href="styles.css">\n', '');
+                indexContents = replaceString(indexContents, '<style></style>', '<style>' + contents + '</style>');
+                indexContents = replaceString(indexContents, '    <link rel="stylesheet" type="text/css" href="styles.css">\n', '');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
@@ -144,7 +144,7 @@ function inlineAssets(projectPath) {
             // 6. Remove __loading__.js.
             (function() {
                 console.log("↪️ Remove __loading__.js");
-                indexContents = indexContents.replace('    <script src="__loading__.js"></script>\n', '');
+                indexContents = replaceString(indexContents, '    <script src="__loading__.js"></script>\n', '');
             })();
 
 
@@ -164,7 +164,7 @@ function inlineAssets(projectPath) {
                     var jsonContents = Uint8Array.from(fs.readFileSync(filepath));
                     var b64 = base64js.fromByteArray(jsonContents);
 
-                    contents = contents.replace(match[1], "data:application/json;base64," + b64);
+                    contents = replaceString(contents, match[1], "data:application/json;base64," + b64);
                 };
 
                 jsonToBase64(/SCENE_PATH = "(.*)";/i);
@@ -181,7 +181,7 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
-                contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+                contents = replaceString(contents, regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
 
                 fs.writeFileSync(location, contents);
             })();
@@ -198,8 +198,13 @@ function inlineAssets(projectPath) {
                     var url = element[1];
                     var filepath = path.resolve(projectPath, url);
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
-                    fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
-                    indexContents = indexContents.replace(element[0], '<script>' + fileContent + '</script>');
+
+                    // If it is already minified then don't try to minify it again
+                    if (!url.endsWith('.min.js')) {
+                        fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
+                    }
+
+                    indexContents = replaceString(indexContents, element[0], '<script>' + fileContent + '</script>');
                 };
             })();
 
@@ -213,6 +218,10 @@ function copyHtmlFile (inPath) {
     return new Promise((resolve, reject) => {
         console.log('✔️ Finishing up');
         var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.html');
+        if (!fs.existsSync(path.dirname(outputPath))) {
+            fs.mkdirSync(path.dirname(outputPath), {recursive:true});
+        }
+
         fs.createReadStream(inPath).pipe(fs.createWriteStream(outputPath));
         resolve(outputPath);
     });
