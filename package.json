@@ -1,5 +1,5 @@
 {
-  "name": "playcanvas-rest-api-tools",
+  "name": "rest-api-tools",
   "version": "1.0.0",
   "description": "A suite of node scripts to use the PlayCanvas REST API",
   "scripts": {
@@ -11,7 +11,7 @@
     "one-page": "node one-page.js",
     "no-minify": "node no-minify.js"
   },
-  "author": "syau@snap.com",
+  "author": "support@playcanvas.com",
   "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.4.14",
