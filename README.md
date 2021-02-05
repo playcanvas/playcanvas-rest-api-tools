@@ -12,7 +12,7 @@ Currently they are:
 All downloaded files can be found in `temp/out`.
 
 ## Requirements
-Install [Node JS (v12+)](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm)
+Install [Node JS (v12+)](https://nodejs.org/en/download/)
 
 ## Setup
 1. Clone this repo
