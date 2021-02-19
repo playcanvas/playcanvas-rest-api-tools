@@ -74,7 +74,7 @@ This uses the [Archive Project REST API](https://developer.playcanvas.com/en/use
 
 #### Example
 ```
-$ npm run arhive
+$ npm run archive
     ✔️ Requested archive from Playcanvas
     ↪️ Polling job  99999
        job still running
