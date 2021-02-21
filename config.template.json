@@ -24,5 +24,8 @@
             "data:",
             "https://www.google-analytics.com"
         ]
+    },
+    "one-page": {
+        "use-xhr": true
     }
 }
