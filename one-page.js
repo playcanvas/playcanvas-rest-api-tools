@@ -101,6 +101,10 @@ function inlineAssets(projectPath) {
                     var urlSplit = url.split('.');
                     var extension = urlSplit[urlSplit.length - 1];
 
+                    if (asset.name == 'cocktail.json') {
+                        console.log('foo');
+                    }
+
                     var filepath = path.resolve(projectPath, url);
 
                     var fileContents;
@@ -133,7 +137,8 @@ function inlineAssets(projectPath) {
                         } break;
 
                         case "json": {
-                            if (asset.type !== 'model' && asset.type !== 'animation') {
+                            // The model and animation loader assumes that the base64 URL will be loaded as a binary
+                            if ((asset.type !== 'model' && asset.type !== 'animation')) {
                                 mimeprefix = "data:application/json";
                             }
                         } break;

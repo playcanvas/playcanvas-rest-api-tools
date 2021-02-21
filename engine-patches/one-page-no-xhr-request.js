@@ -9,7 +9,7 @@
         var base64 = url.slice(index + 1);
         var data = window.atob(base64);
 
-        if (url.startsWith('data:application/json;base64')) {
+        if (url.startsWith('data:application/json;base64') || options.responseType === pc.Http.ResponseType.JSON) {
             data = JSON.parse(data);
         } else {
             // Assume binary if not JSON
