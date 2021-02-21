@@ -26,6 +26,6 @@
         ]
     },
     "one-page": {
-        "use-xhr": true
+        "patch_xhr_out": false
     }
 }
