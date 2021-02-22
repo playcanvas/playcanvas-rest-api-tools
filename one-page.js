@@ -31,7 +31,7 @@ function inlineAssets(projectPath) {
                         }
                     });
                     indexContents = indexContents.replace(
-                        '<script src="playcanvas-stable.min.js"></script>', 
+                        '<script src="playcanvas-stable.min.js"></script>',
                         '<script src="playcanvas-stable.min.js"></script>\n    <script src="' + patchFileName + '"></script>'
                     );
                 }
@@ -65,11 +65,11 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 indexContents = indexContents.replace('<style></style>', '');
-                
+
                 var b64 = btoa(unescape(encodeURIComponent(contents)));
                 var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
                 indexContents = indexContents.replace(
-                    styleRegex, 
+                    styleRegex,
                     '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
             })();
 
@@ -137,6 +137,11 @@ function inlineAssets(projectPath) {
                             if ((asset.type !== 'model' && asset.type !== 'animation')) {
                                 mimeprefix = "data:application/json";
                             }
+                        } break;
+
+                        case "css":
+                        case "html": {
+                            mimeprefix = "data:text/plain";
                         } break;
 
                         case "mp4": {

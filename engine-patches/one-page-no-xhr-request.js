@@ -4,13 +4,15 @@
             callback = options;
             options = {};
         }
-        
+
         var index = url.indexOf(',');
         var base64 = url.slice(index + 1);
         var data = window.atob(base64);
 
-        if (url.startsWith('data:application/json;base64') || options.responseType === pc.Http.ResponseType.JSON) {
+        if (url.startsWith('data:application/json') || options.responseType === pc.Http.ResponseType.JSON) {
             data = JSON.parse(data);
+        } else if (url.startsWith('data:text/plain')) {
+            // Do nothing
         } else {
             // Assume binary if not JSON
             var len = data.length;
