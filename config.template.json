@@ -25,7 +25,7 @@
             "https://www.google-analytics.com"
         ]
     },
-    "one-page": {
+    "one_page": {
         "patch_xhr_out": false
     }
 }
