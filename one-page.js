@@ -100,11 +100,7 @@ function inlineAssets(projectPath) {
                     var url = unescape(asset.file.url);
                     var urlSplit = url.split('.');
                     var extension = urlSplit[urlSplit.length - 1];
-
-                    if (asset.name == 'cocktail.json') {
-                        console.log('foo');
-                    }
-
+                    
                     var filepath = path.resolve(projectPath, url);
 
                     var fileContents;
