@@ -115,6 +115,10 @@ function inlineAssets(projectPath) {
                     var extension = urlSplit[urlSplit.length - 1];
 
                     var filepath = path.resolve(projectPath, url);
+                    if (!fs.existsSync(filepath)) {
+                        console.log("   Cannot find file " + filepath + " If it's a loading screen script, please ignore");
+                        continue;
+                    }
 
                     var fileContents;
                     var isText = false;
