@@ -80,11 +80,10 @@ function inlineAssets(projectPath) {
 
                 indexContents = indexContents.replace('<style></style>', '');
 
-                var b64 = btoa(unescape(encodeURIComponent(contents)));
                 var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
                 indexContents = indexContents.replace(
                     styleRegex,
-                    '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
+                    '<style>\n'+ contents + '\n</style>');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
