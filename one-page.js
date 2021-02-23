@@ -123,35 +123,35 @@ function inlineAssets(projectPath) {
 
                     var mimeprefix = "data:application/octet-stream";
                     switch(extension) {
-                        case "png": {
+                        case "png":
                             mimeprefix = "data:image/png";
-                        } break;
+                        break;
 
                         case "jpeg":
-                        case "jpg": {
+                        case "jpg":
                             mimeprefix = "data:image/jpeg";
-                        } break;
+                        break;
 
-                        case "json": {
+                        case "json":
                             // The model and animation loader assumes that the base64 URL will be loaded as a binary
                             if ((asset.type !== 'model' && asset.type !== 'animation')) {
                                 mimeprefix = "data:application/json";
                             }
-                        } break;
+                        break;
 
                         case "css":
-                        case "html": {
+                        case "html":
                             mimeprefix = "data:text/plain";
-                        } break;
+                        break;
 
-                        case "mp4": {
+                        case "mp4":
                             mimeprefix = "data:video/mp4";
-                        } break;
+                        break;
 
-                        case "js": {
+                        case "js":
                             mimeprefix = "data:text/javascript";
                             fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
-                        } break;
+                        break;
                     }
 
                     var b64;
