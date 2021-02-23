@@ -48,6 +48,8 @@ This uses the [Download App REST API](https://developer.playcanvas.com/en/user-m
 
 It will unzip the build, add the [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) rules to the `index.html` file and rezip the project.
 
+Please configure the CSP lists in `config.json` under `csp`.
+
 ### Usage
 1. `npm run csp`
 
@@ -130,6 +132,10 @@ Once finished, it will copy the HTML file to the out folder.
 There are some limitations:
 - Modules are not supported (Basis and Ammo)
 - Texture compression formats are not supported
+
+An experimental feature is available to patch the engine to not use XHR requests when loading assets. This may be required for some platforms where this is not permitted. As this is a patch, there may be edge cases where some asset types may not work. If you find any any, please report them in the issues.
+
+The option can be foind in `config.json` under `one_page`. Set `patch_xhr_out` to true.
 
 ### Usage
 1. `npm run one-page`

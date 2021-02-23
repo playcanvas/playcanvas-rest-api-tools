@@ -16,6 +16,27 @@ function inlineAssets(projectPath) {
             var indexLocation = path.resolve(projectPath, "index.html");
             var indexContents = fs.readFileSync(indexLocation, 'utf-8');
 
+            // XHR request patch. We may need to not use XHR due to restrictions on the hosting service
+            // such as Facebook playable ads. If that's the case, we will add a patch to override http.get
+            // and decode the base64 URL ourselves
+            // Copy the patch to the project directory and add the script to index.html
+            (function () {
+                if (config.one_page.patch_xhr_out) {
+                    console.log("↪️ Adding no XHR engine patch");
+                    var patchFileName = 'one-page-no-xhr-request.js';
+                    var xhrPatchLocation = path.resolve(projectPath, patchFileName);
+                    fs.copyFile('engine-patches/' + patchFileName, xhrPatchLocation, (err) => {
+                        if (err) {
+                            throw err
+                        }
+                    });
+                    indexContents = indexContents.replace(
+                        '<script src="playcanvas-stable.min.js"></script>',
+                        '<script src="playcanvas-stable.min.js"></script>\n    <script src="' + patchFileName + '"></script>'
+                    );
+                }
+            })();
+
             // 1. Remove manifest.json and the reference in the index.html
             (function() {
                 console.log("↪️ Removing manifest.json");
@@ -44,11 +65,11 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 indexContents = indexContents.replace('<style></style>', '');
-                
+
                 var b64 = btoa(unescape(encodeURIComponent(contents)));
                 var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
                 indexContents = indexContents.replace(
-                    styleRegex, 
+                    styleRegex,
                     '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
             })();
 
@@ -102,29 +123,35 @@ function inlineAssets(projectPath) {
 
                     var mimeprefix = "data:application/octet-stream";
                     switch(extension) {
-                        case "png": {
+                        case "png":
                             mimeprefix = "data:image/png";
-                        } break;
+                        break;
 
                         case "jpeg":
-                        case "jpg": {
+                        case "jpg":
                             mimeprefix = "data:image/jpeg";
-                        } break;
+                        break;
 
-                        case "json": {
-                            if (asset.type !== 'model' && asset.type !== 'animation') {
+                        case "json":
+                            // The model and animation loader assumes that the base64 URL will be loaded as a binary
+                            if ((asset.type !== 'model' && asset.type !== 'animation')) {
                                 mimeprefix = "data:application/json";
                             }
-                        } break;
+                        break;
 
-                        case "mp4": {
+                        case "css":
+                        case "html":
+                            mimeprefix = "data:text/plain";
+                        break;
+
+                        case "mp4":
                             mimeprefix = "data:video/mp4";
-                        } break;
+                        break;
 
-                        case "js": {
+                        case "js":
                             mimeprefix = "data:text/javascript";
                             fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
-                        } break;
+                        break;
                     }
 
                     var b64;
