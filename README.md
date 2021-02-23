@@ -133,9 +133,18 @@ There are some limitations:
 - Modules are not supported (Basis and Ammo)
 - Texture compression formats are not supported
 
-An experimental feature is available to patch the engine to not use XHR requests when loading assets. This may be required for some platforms where this is not permitted. As this is a patch, there may be edge cases where some asset types may not work. If you find any any, please report them in the issues.
+### Experimental features
 
-The option can be foind in `config.json` under `one_page`. Set `patch_xhr_out` to true.
+#### Remove XHR requests
+Adds an engine patch to remove any XHR requests and decodes the base64 URLs directly. This may be required for some platforms where this is not permitted. As this is a patch, there may be edge cases where some asset types may not work. If you find any any, please report them in the issues.
+
+The option can be found in `config.json` under `one_page`. Set `patch_xhr_out` to true.
+
+#### Inline game scripts
+Adds an engine patch to decode base64 URLS for JS scripts when the engine adds them to the page document. This may be required for some platforms that block base64 encoded JS URLs. As this is a patch, there may be edge cases where some asset types may not work. If you find any any, please report them in the issues.
+
+The option can be found in `config.json` under `one_page`. Set `inline_game_scripts` to true.
+
 
 ### Usage
 1. `npm run one-page`

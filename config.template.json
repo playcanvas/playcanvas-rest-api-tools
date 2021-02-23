@@ -26,6 +26,7 @@
         ]
     },
     "one_page": {
-        "patch_xhr_out": false
+        "patch_xhr_out": false,
+        "inline_game_scripts": false
     }
 }
