@@ -9,7 +9,16 @@ function readConfig() {
     const env = dotenv.config().parsed;
     const configStr = fs.readFileSync('config.json', 'utf-8');
     const config = JSON.parse(configStr);
-    config.authToken = env['AUTH_TOKEN']
+    config.authToken = env['AUTH_TOKEN'];
+
+    // Add defaults if they don't exist
+    config.csp = config.csp || {};
+    config.csp['style-src'] = config.csp['style-src'] || [];
+    config.csp['connect-src'] = config.csp['connect-src'] || [];
+
+    config.one_page = config.one_page || {};
+    config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
+
     return config;
 }
 
