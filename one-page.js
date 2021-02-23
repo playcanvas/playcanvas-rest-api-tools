@@ -158,6 +158,7 @@ function inlineAssets(projectPath) {
 
                         case "css":
                         case "html":
+                        case "txt":
                             mimeprefix = "data:text/plain";
                         break;
 
@@ -167,7 +168,10 @@ function inlineAssets(projectPath) {
 
                         case "js":
                             mimeprefix = "data:text/javascript";
-                            fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            // If it is already minified then don't try to minify it again
+                            if (!url.endsWith('.min.js')) {
+                                fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            }
                         break;
                     }
 

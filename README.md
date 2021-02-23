@@ -132,6 +132,8 @@ Once finished, it will copy the HTML file to the out folder.
 There are some limitations:
 - Modules are not supported (Basis and Ammo)
 - Texture compression formats are not supported
+- Spine runtime is not supported
+- Any code relying on asset URLs being a file path will not work as they will be Base64 encoded
 
 ### Experimental features
 
