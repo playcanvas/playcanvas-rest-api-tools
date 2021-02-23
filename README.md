@@ -145,6 +145,10 @@ Adds an engine patch to decode base64 URLS for JS scripts when the engine adds t
 
 The option can be found in `config.json` under `one_page`. Set `inline_game_scripts` to true.
 
+#### Extern files
+Enabling this will keep the PlayCanvas engine code and game data as separate files. It will also zip up these files as the output file. This can be used for platforms that have a larger allowance for a zipped package to be used compared to a single HTML file.
+
+The option can be found in `config.json` under `one_page`. Set `extern_files` to true.
 
 ### Usage
 1. `npm run one-page`
