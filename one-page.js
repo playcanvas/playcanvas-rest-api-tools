@@ -328,10 +328,3 @@ shared.downloadProject(config, "temp/downloads")
     .then(packageFiles)
     .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
-
-// var zipLocation = '/Users/stevenyau/Snapchat/Dev/playcanvas-rest-api-tools/temp/downloads/Flappy Bird_Download.zip';
-//     shared.unzipProject(zipLocation, 'contents')
-//     .then(inlineAssets)
-//     .then(packageFiles)
-//     .then(outputHtml => console.log("Success", outputHtml))
-//     .catch(err => console.log("Error", err));
