@@ -18,6 +18,7 @@ function readConfig() {
 
     config.one_page = config.one_page || {};
     config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
+    config.one_page.inline_game_scripts = config.one_page.inline_game_scripts || false;
 
     return config;
 }
