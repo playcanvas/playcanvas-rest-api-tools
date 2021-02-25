@@ -9,6 +9,10 @@ const replaceString = require('replace-string');
 const shared = require('./shared');
 
 const config = shared.readConfig();
+const EXTERN_FILES = [
+    'playcanvas-stable.min.js',
+    '__settings__.js'
+];
 
 function inlineAssets(projectPath) {
     return new Promise((resolve, reject) => {
@@ -76,11 +80,10 @@ function inlineAssets(projectPath) {
 
                 indexContents = indexContents.replace('<style></style>', '');
 
-                var b64 = btoa(unescape(encodeURIComponent(contents)));
                 var styleRegex = / *<link rel="stylesheet" type="text\/css" href="styles\.css">/;
                 indexContents = indexContents.replace(
                     styleRegex,
-                    '<style type="text/css">@import url("data:text/css;base64,' + b64 + '");</style>');
+                    '<style>\n'+ contents + '\n</style>');
             })();
 
             // 4. Open config.json and replace urls with base64 strings of the files with the correct mime type
@@ -112,6 +115,10 @@ function inlineAssets(projectPath) {
                     var extension = urlSplit[urlSplit.length - 1];
 
                     var filepath = path.resolve(projectPath, url);
+                    if (!fs.existsSync(filepath)) {
+                        console.log("   Cannot find file " + filepath + " If it's a loading screen script, please ignore");
+                        continue;
+                    }
 
                     var fileContents;
                     var isText = false;
@@ -151,6 +158,7 @@ function inlineAssets(projectPath) {
 
                         case "css":
                         case "html":
+                        case "txt":
                             mimeprefix = "data:text/plain";
                         break;
 
@@ -160,7 +168,10 @@ function inlineAssets(projectPath) {
 
                         case "js":
                             mimeprefix = "data:text/javascript";
-                            fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            // If it is already minified then don't try to minify it again
+                            if (!url.endsWith('.min.js')) {
+                                fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            }
                         break;
                     }
 
@@ -234,11 +245,20 @@ function inlineAssets(projectPath) {
             await (async function() {
                 console.log("↪️ Inline JS scripts in index.html");
 
+                // If true, we will not embed the engine or __settings__.js file (which contains the data)
+                var externFiles = config.one_page.extern_files;
                 var urlRegex = /<script src="(.*)"><\/script>/g;
                 var urlMatches = [...indexContents.matchAll(urlRegex)];
 
                 for (const element of urlMatches) {
                     var url = element[1];
+
+                    if (externFiles) {
+                        if (EXTERN_FILES.includes(url)) {
+                            continue;
+                        }
+                    }
+
                     var filepath = path.resolve(projectPath, url);
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
 
@@ -252,21 +272,58 @@ function inlineAssets(projectPath) {
             })();
 
             fs.writeFileSync(indexLocation, indexContents);
-            resolve(indexLocation);
+            resolve(projectPath);
         })();
     });
 }
 
-function copyHtmlFile (inPath) {
+async function packageFiles (projectPath) {
     return new Promise((resolve, reject) => {
-        console.log('✔️ Finishing up');
-        var outputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.html');
-        if (!fs.existsSync(path.dirname(outputPath))) {
-            fs.mkdirSync(path.dirname(outputPath), {recursive:true});
-        }
+        (async function () {
+            console.log('✔️ Packaging files');
+            var indexLocation = path.resolve(projectPath, "index.html");
 
-        fs.createReadStream(inPath).pipe(fs.createWriteStream(outputPath));
-        resolve(outputPath);
+            if (config.one_page.extern_files) {
+                // Make a package folder
+                var packagePath = path.resolve(projectPath, 'package');
+                fs.mkdirSync(packagePath);
+
+                // Copy files to a new dir
+                for (const filename of EXTERN_FILES) {
+                    fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(packagePath, filename), (err) => {
+                        if (err) {
+                            throw err
+                        }
+                    });
+                }
+
+                fs.copyFileSync(indexLocation, path.resolve(packagePath, 'index.html'), (err) => {
+                    if (err) {
+                        throw err
+                    }
+                });
+
+                var zipOutputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.zip');
+                await shared.zipProject(packagePath, zipOutputPath);
+
+                resolve(zipOutputPath);
+            } else {
+                var indexOutputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.html');
+                if (!fs.existsSync(path.dirname(indexOutputPath))) {
+                    fs.mkdirSync(path.dirname(indexOutputPath), {
+                        recursive: true
+                    });
+                }
+
+                fs.copyFileSync(indexLocation, indexOutputPath, (err) => {
+                    if (err) {
+                        throw err
+                    }
+                });
+
+                resolve(indexOutputPath);
+            }
+        })()
     });
 }
 
@@ -276,6 +333,6 @@ config.playcanvas.scripts_concatenate = false;
 shared.downloadProject(config, "temp/downloads")
     .then((zipLocation) => shared.unzipProject(zipLocation, 'contents') )
     .then(inlineAssets)
-    .then(copyHtmlFile)
+    .then(packageFiles)
     .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
