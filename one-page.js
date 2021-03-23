@@ -22,11 +22,7 @@ function inlineAssets(projectPath) {
 
             var addPatchFile = function (filename) {
                 var patchLocation = path.resolve(projectPath, filename);
-                fs.copyFileSync('engine-patches/' + filename, patchLocation, (err) => {
-                    if (err) {
-                        throw err
-                    }
-                });
+                fs.copyFileSync('engine-patches/' + filename, patchLocation, fs.constants.COPYFILE_FICLONE);
                 indexContents = indexContents.replace(
                     '<script src="playcanvas-stable.min.js"></script>',
                     '<script src="playcanvas-stable.min.js"></script>\n    <script src="' + filename + '"></script>'
@@ -290,18 +286,10 @@ async function packageFiles (projectPath) {
 
                 // Copy files to a new dir
                 for (const filename of EXTERN_FILES) {
-                    fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(packagePath, filename), (err) => {
-                        if (err) {
-                            throw err
-                        }
-                    });
+                    fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(packagePath, filename), fs.constants.COPYFILE_FICLONE);
                 }
 
-                fs.copyFileSync(indexLocation, path.resolve(packagePath, 'index.html'), (err) => {
-                    if (err) {
-                        throw err
-                    }
-                });
+                fs.copyFileSync(indexLocation, path.resolve(packagePath, 'index.html'), fs.constants.COPYFILE_FICLONE);
 
                 var zipOutputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.zip');
                 await shared.zipProject(packagePath, zipOutputPath);
@@ -315,11 +303,7 @@ async function packageFiles (projectPath) {
                     });
                 }
 
-                fs.copyFileSync(indexLocation, indexOutputPath, (err) => {
-                    if (err) {
-                        throw err
-                    }
-                });
+                fs.copyFileSync(indexLocation, indexOutputPath, fs.constants.COPYFILE_FICLONE);
 
                 resolve(indexOutputPath);
             }
