@@ -20,6 +20,7 @@ function readConfig() {
     config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
     config.one_page.inline_game_scripts = config.one_page.inline_game_scripts || false;
     config.one_page.extern_files = config.one_page.extern_files || false;
+    config.one_page.mraid_support = config.one_page.mraid_support || false;
 
     return config;
 }

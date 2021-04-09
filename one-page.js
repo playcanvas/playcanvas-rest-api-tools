@@ -45,6 +45,31 @@ function inlineAssets(projectPath) {
                     console.log("↪️ Adding inline game script engine patch");
                     addPatchFile('one-page-inline-game-scripts.js');
                 }
+
+                // MRAID support needs to include the mraid.js file and also force the app to use filltype NONE
+                // so that it fits in the canvas that is sized by the MRAID implementation on the app. This requires
+                // patching the CSS too to ensure it is placed correctly in the Window
+                if (config.one_page.mraid_support) {
+                    console.log("↪️ Adding mraid.js as a library");
+                    indexContents = indexContents.replace(
+                        '<script src="playcanvas-stable.min.js"></script>',
+                        '<script src="mraid.js"></script>\n    <script src="playcanvas-stable.min.js"></script>'
+                    );
+
+                    console.log("↪️ Force fill type to be NONE in config.js");
+                    var configLocation = path.resolve(projectPath, "config.json");
+                    var configContents = fs.readFileSync(configLocation, 'utf-8');
+                    var configJson = JSON.parse(configContents);
+                    //configJson.application_properties.fillMode = "NONE";
+                    fs.writeFileSync(configLocation, JSON.stringify(configJson));
+
+                    console.log("↪️ Patch CSS to fill the canvas to the body");
+                    var cssLocation = path.resolve(projectPath, "styles.css");
+                    var cssContents = fs.readFileSync(cssLocation, 'utf-8');
+                    var cssRegex = /#application-canvas\.fill-mode-NONE[\s\S]*}/;
+                    cssContents = cssContents.replace(cssRegex, '#application-canvas.fill-mode-NONE { margin: 0; width: 100%; height: 100%; }');
+                    fs.writeFileSync(cssLocation, cssContents);
+                }
             })();
 
             // 1. Remove manifest.json and the reference in the index.html
@@ -62,7 +87,21 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
-                contents = contents.replace(regex, 'configure();');
+
+                if (config.one_page.mraid_support) {
+                    // if (window.mraid) {
+                    //     if (mraid.getState() !== 'ready') {
+                    //         mraid.addEventListener('ready', configure);
+                    //     } else {
+                    //         configure();
+                    //     }
+                    // } else {
+                    //     configure();
+                    // }
+                    contents = contents.replace(regex, 'window.mraid&&"ready"!==mraid.getState()?mraid.addEventListener("ready",configure):configure();');
+                } else {
+                    contents = contents.replace(regex, 'configure();');
+                }
                 fs.writeFileSync(location, contents);
             })();
 
@@ -94,7 +133,6 @@ function inlineAssets(projectPath) {
 
                 var configJson = JSON.parse(contents);
                 var assets = configJson.assets;
-
 
                 for (const [key, asset] of Object.entries(assets)) {
                     if (!Object.prototype.hasOwnProperty.call(assets, key)) {
@@ -256,6 +294,10 @@ function inlineAssets(projectPath) {
                     }
 
                     var filepath = path.resolve(projectPath, url);
+                    if (!fs.existsSync(filepath)) {
+                        continue;
+                    }
+
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
 
                     // If it is already minified then don't try to minify it again
