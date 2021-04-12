@@ -143,7 +143,7 @@ Adds an engine patch to remove any XHR requests and decodes the base64 URLs dire
 The option can be found in `config.json` under `one_page`. Set `patch_xhr_out` to true.
 
 #### Inline game scripts
-Adds an engine patch to decode base64 URLS for JS scripts when the engine adds them to the page document. This may be required for some platforms that block base64 encoded JS URLs. As this is a patch, there may be edge cases where some asset types may not work. If you find any any, please report them in the issues.
+Adds an engine patch to decode base64 URLS for JS scripts when the engine adds them to the page document. This may be required for some platforms that block base64 encoded JS URLs. As this is a patch, there may be edge cases where some asset types may not work. If you find any, please report them in the issues.
 
 The option can be found in `config.json` under `one_page`. Set `inline_game_scripts` to true.
 
@@ -151,6 +151,12 @@ The option can be found in `config.json` under `one_page`. Set `inline_game_scri
 Enabling this will keep the PlayCanvas engine code and game data as separate files. It will also zip up these files as the output file. This can be used for platforms that have a larger allowance for a zipped package to be used compared to a single HTML file.
 
 The option can be found in `config.json` under `one_page`. Set `extern_files` to true.
+
+#### MRAID interstitial support
+
+Adds basic support for MRAID API within the PlayCanvas engine and boilerplate code. 
+
+The option can be found in `config.json` under `one_page`. Set `mraid_support` to true.
 
 ### Usage
 1. `npm run one-page`
