@@ -60,13 +60,13 @@ function inlineAssets(projectPath) {
                     var configLocation = path.resolve(projectPath, "config.json");
                     var configContents = fs.readFileSync(configLocation, 'utf-8');
                     var configJson = JSON.parse(configContents);
-                    //configJson.application_properties.fillMode = "NONE";
+                    configJson.application_properties.fillMode = "NONE";
                     fs.writeFileSync(configLocation, JSON.stringify(configJson));
 
                     console.log("↪️ Patch CSS to fill the canvas to the body");
                     var cssLocation = path.resolve(projectPath, "styles.css");
                     var cssContents = fs.readFileSync(cssLocation, 'utf-8');
-                    var cssRegex = /#application-canvas\.fill-mode-NONE[\s\S]*}/;
+                    var cssRegex = /#application-canvas\.fill-mode-NONE[\s\S]*?}/;
                     cssContents = cssContents.replace(cssRegex, '#application-canvas.fill-mode-NONE { margin: 0; width: 100%; height: 100%; }');
                     fs.writeFileSync(cssLocation, cssContents);
                 }
@@ -269,7 +269,15 @@ function inlineAssets(projectPath) {
                 var contents = fs.readFileSync(location, 'utf-8');
 
                 var regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
-                contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+
+                if (config.one_page.mraid_support) {
+                    // We don't want the height/width to be controlled by the original app resolution width and height
+                    // so we don't pass the height/width into resize canvas and let the canvas CSS on the HTML
+                    // handle the canvas dimensions
+                    contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas();");
+                } else {
+                    contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+                }
 
                 fs.writeFileSync(location, contents);
             })();
