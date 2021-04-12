@@ -268,14 +268,18 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "__start__.js");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                var regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
+                var regex;
 
                 if (config.one_page.mraid_support) {
                     // We don't want the height/width to be controlled by the original app resolution width and height
                     // so we don't pass the height/width into resize canvas and let the canvas CSS on the HTML
-                    // handle the canvas dimensions
-                    contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas();");
+                    // handle the canvas dimensions.
+
+                    // Also remove use of marginTop as we are no longer using this
+                    regex = /var reflow = function \(\) {[\s\S]*?};/
+                    contents = contents.replace(regex, "var reflow=function(){canvas.style.width=\"\",canvas.style.height=\"\",app.resizeCanvas()};");
                 } else {
+                    regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
                     contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
                 }
 
