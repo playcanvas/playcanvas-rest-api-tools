@@ -183,3 +183,8 @@ $ npm run one-page
     ✔️ Finishing up
     Success someProject.html
 ```
+
+#### Testing
+Please use the following command to create the most common outputs for the one-page job with public projects owned by the PlayCanvas team.
+
+1. `npm run test-one-page`
