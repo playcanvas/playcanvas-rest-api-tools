@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 375389,
+        "name": "Flappy Bird",
+        "scenes" : [404993],
+        "branch_name": "master",
+        "branch_id": "605cd6ab-17b4-4dac-9960-ad439567c957",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": false,
+        "extern_files": false,
+        "mraid_support": false
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 775981,
+        "name": "Cube Jump MRAID Interstitial",
+        "scenes" : [1113087],
+        "branch_name": "master",
+        "branch_id": "94c72be8-ae43-4142-9d2a-6ea31039be11",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": true,
+        "extern_files": false,
+        "mraid_support": true
+    }
+}
