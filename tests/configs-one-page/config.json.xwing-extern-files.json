@@ -1,0 +1,27 @@
+{
+    "playcanvas": {
+        "project_id": 395232,
+        "name": "X Wing Extern Files",
+        "scenes" : [427806],
+        "branch_name": "master",
+        "branch_id": "dfbe2442-0acf-49c2-8f5f-f32aa7aa6729",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": false,
+        "extern_files": true
+    }
+}

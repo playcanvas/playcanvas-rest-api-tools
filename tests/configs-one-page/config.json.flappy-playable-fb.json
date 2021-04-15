@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 785157,
+        "name": "Flappy Bird Playable FB",
+        "scenes" : [1131060],
+        "branch_name": "master",
+        "branch_id": "31ff2bba-9f97-4b4d-933b-e908e06c6429",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": true,
+        "inline_game_scripts": true,
+        "extern_files": false,
+        "mraid_support": false
+    }
+}

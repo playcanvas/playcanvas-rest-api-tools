@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 783639,
+        "name": "Flappy Bird MRAID Interstitial",
+        "scenes" : [1128241],
+        "branch_name": "master",
+        "branch_id": "d43af44b-0f60-40f2-a8cf-abaf544d1e11",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": true,
+        "extern_files": false,
+        "mraid_support": true
+    }
+}

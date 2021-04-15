@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 354998,
+        "name": "Cube Jumper Playable FB",
+        "scenes" : [380870],
+        "branch_name": "master",
+        "branch_id": "3c2266b4-4ec7-4616-959e-cf41833e99cf",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": true,
+        "inline_game_scripts": true,
+        "extern_files": false,
+        "mraid_support": true
+    }
+}

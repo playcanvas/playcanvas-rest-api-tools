@@ -1,0 +1,28 @@
+{
+    "playcanvas": {
+        "project_id": 749556,
+        "name": "File Ad Audit MRAID Interstitial",
+        "scenes" : [1059411],
+        "branch_name": "master",
+        "branch_id": "26ea4215-c688-46a2-8b62-f61beca75cd9",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": true,
+        "extern_files": false,
+        "mraid_support": true
+    }
+}
