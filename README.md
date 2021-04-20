@@ -16,8 +16,8 @@ Install [Node JS (v12+)](https://nodejs.org/en/download/)
 
 ## Setup
 1. Clone this repo
-2. `mv .env.template .env` and add your PlayCanvas Auth Token in there
-3. `mv config.template.json config.json` and add your configuration in there (Project name, branch, scenes, CSP rules, etc. The parameters for the PlayCanvas object are explained in the [User Manual](https://developer.playcanvas.com/en/user-manual/api/)).
+2. `mv .env.template .env` or make a of copy the `.env.template` file and rename to `.env` and add your PlayCanvas Auth Token in there
+3. `mv config.template.json config.json` or make a of copy the `config.template.json` file and rename to `config.json` and add your configuration in there (Project name, branch, scenes, CSP rules, etc. The parameters for the PlayCanvas object are explained in the [User Manual](https://developer.playcanvas.com/en/user-manual/api/)).
 4. `npm install`
 
 ---
