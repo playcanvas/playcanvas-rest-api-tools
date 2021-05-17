@@ -19,8 +19,24 @@ function readConfig() {
     config.one_page = config.one_page || {};
     config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
     config.one_page.inline_game_scripts = config.one_page.inline_game_scripts || false;
-    config.one_page.extern_files = config.one_page.extern_files || false;
     config.one_page.mraid_support = config.one_page.mraid_support || false;
+
+    // Mon 17 May 2021: Backwards compatibility when this used to be a boolean
+    // and convert to an object
+    var onePageExternFiles = config.one_page.extern_files;
+    if (onePageExternFiles) {
+        if (typeof onePageExternFiles === 'boolean') {
+            onePageExternFiles = {
+                enabled: onePageExternFiles
+            }
+        }
+    }
+
+    onePageExternFiles = onePageExternFiles || { enabled: false };
+    onePageExternFiles.folder_name = onePageExternFiles.folder_name || '';
+    onePageExternFiles.external_url_prefix = onePageExternFiles.external_url_prefix || '';
+
+    config.one_page.extern_files = onePageExternFiles;
 
     return config;
 }

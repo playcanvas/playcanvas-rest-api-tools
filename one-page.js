@@ -292,14 +292,14 @@ function inlineAssets(projectPath) {
                 console.log("↪️ Inline JS scripts in index.html");
 
                 // If true, we will not embed the engine or __settings__.js file (which contains the data)
-                var externFiles = config.one_page.extern_files;
+                var externFilesConfig = config.one_page.extern_files;
                 var urlRegex = /<script src="(.*)"><\/script>/g;
                 var urlMatches = [...indexContents.matchAll(urlRegex)];
 
                 for (const element of urlMatches) {
                     var url = element[1];
 
-                    if (externFiles) {
+                    if (externFilesConfig.enabled) {
                         if (EXTERN_FILES.includes(url)) {
                             continue;
                         }
@@ -333,18 +333,38 @@ async function packageFiles (projectPath) {
             console.log('✔️ Packaging files');
             var indexLocation = path.resolve(projectPath, "index.html");
 
-            if (config.one_page.extern_files) {
-                // Make a package folder
+            var externFilesConfig = config.one_page.extern_files;
+
+            if (externFilesConfig.enabled) {
+                // Make a package folder with an assets folder
                 var packagePath = path.resolve(projectPath, 'package');
-                fs.mkdirSync(packagePath);
+                var assetsPath = path.resolve(packagePath, externFilesConfig.folder_name);
+
+                // Create the all the folders using the assets path and recursive creation
+                fs.mkdirSync(assetsPath, {recursive: true});
 
                 // Copy files to a new dir
                 for (const filename of EXTERN_FILES) {
-                    fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(packagePath, filename));
+                    fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(assetsPath, filename));
                 }
 
+                // Make the changes to file paths in index.html as they can be in a folder
+                // or need a URL prefix for CDN purposes
+                var assetFilePrefix = externFilesConfig.external_url_prefix.length > 0 ? externFilesConfig.external_url_prefix + '/' : '';
+                assetFilePrefix += externFilesConfig.folder_name.length > 0 ? externFilesConfig.folder_name + '/' : '';
+
+                var indexContents = fs.readFileSync(indexLocation, 'utf-8');
+
+                for (const filename of EXTERN_FILES) {
+                    indexContents = indexContents.replace(
+                        '<script src="' + filename + '"></script>',
+                        '<script src="' + assetFilePrefix + filename + '"></script>'
+                    );
+                }
+                fs.writeFileSync(indexLocation, indexContents);
                 fs.copyFileSync(indexLocation, path.resolve(packagePath, 'index.html'));
 
+                // Zip the package folder contents
                 var zipOutputPath = path.resolve(__dirname, 'temp/out/' + config.playcanvas.name + '.zip');
                 await shared.zipProject(packagePath, zipOutputPath);
 
