@@ -28,7 +28,11 @@
     "one_page": {
         "patch_xhr_out": false,
         "inline_game_scripts": false,
-        "extern_files": false,
+        "extern_files": {
+            "enable": false,
+            "folder_name": "",
+            "external_url_prefix": ""
+        },
         "mraid_support": false
     }
 }

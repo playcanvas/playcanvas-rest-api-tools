@@ -151,7 +151,17 @@ The option can be found in `config.json` under `one_page`. Set `inline_game_scri
 #### Extern files
 Enabling this will keep the PlayCanvas engine code and game data as separate files. It will also zip up these files as the output file. This can be used for platforms that have a larger allowance for a zipped package to be used compared to a single HTML file.
 
-The option can be found in `config.json` under `one_page`. Set `extern_files` to true.
+The option can be found in `config.json` under `one_page`. Set `extern_files.enabled` to true. The files can also be in a separate folder using `extern_files.folder_name` (defaults to the same directory).
+
+In some cases with ad networks, the external files will need to be hosted elsewhere such as a CDN. `extern_files.external_url_prefix` can be used to have the `index.html` reference the files to the CDN. E.g. 
+
+```
+"extern_files": {
+    "enabled": true,
+    "folder_name": "78fb9255-3033-4fe2-b9e1-355b149229a1",
+    "external_url_prefix": "https://some/random/cdn"
+}
+```
 
 #### MRAID interstitial support
 
