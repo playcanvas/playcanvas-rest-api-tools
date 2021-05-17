@@ -22,6 +22,8 @@
     "one_page": {
         "patch_xhr_out": false,
         "inline_game_scripts": false,
-        "extern_files": true
+        "extern_files": {
+            "enable": true
+        }
     }
 }
