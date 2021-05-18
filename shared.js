@@ -35,6 +35,7 @@ function readConfig() {
     onePageExternFiles = onePageExternFiles || { enabled: false };
     onePageExternFiles.folder_name = onePageExternFiles.folder_name || '';
     onePageExternFiles.external_url_prefix = onePageExternFiles.external_url_prefix || '';
+    onePageExternFiles.compress_engine = onePageExternFiles.compress_engine || '';
 
     config.one_page.extern_files = onePageExternFiles;
 

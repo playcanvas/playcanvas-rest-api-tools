@@ -30,6 +30,15 @@ function inlineAssets(projectPath) {
                 );
             };
 
+            var addLibraryFile = function (filename) {
+                var patchLocation = path.resolve(projectPath, filename);
+                fs.copyFileSync('library-files/' + filename, patchLocation);
+                indexContents = indexContents.replace(
+                    '<head>',
+                    '<head>\n    <script src="' + filename + '"></script>'
+                );
+            };
+
             (function () {
                 // XHR request patch. We may need to not use XHR due to restrictions on the hosting service
                 // such as Facebook playable ads. If that's the case, we will add a patch to override http.get
@@ -290,23 +299,42 @@ function inlineAssets(projectPath) {
 
             // 9. Compress the engine file with fflate
             (function() {
-                addPatchFile('fflate.js');
-                addPatchFile('base64-to-uint8.js');
+                if (config.one_page.compress_engine) {
+                    addLibraryFile('fflate.js');
+                    addLibraryFile('base64-to-uint8.js');
 
-                console.log("↪️ Compressing the engine file");
-                var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
-                var fileContent = fs.readFileSync(filepath, 'utf-8');
+                    console.log("↪️ Compressing the engine file");
+                    var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
+                    var fileContent = fs.readFileSync(filepath, 'utf-8');
 
-                var buf = fflate.strToU8(fileContent);
+                    var buf = fflate.strToU8(fileContent);
 
-                // The default compression method is gzip
-                // Increasing mem may increase performance at the cost of memory
-                // The mem ranges from 0 to 12, where 4 is the default
-                var compressedArray = fflate.compressSync(buf, {level: 6, mem: 8});
+                    // The default compression method is gzip
+                    // Increasing mem may increase performance at the cost of memory
+                    // The mem ranges from 0 to 12, where 4 is the default
+                    // Using lowest level possible to reduce decompressing time on client
+                    var compressedArray = fflate.compressSync(buf, {level: 1, mem: 8});
 
-                fileContent = Buffer.from(compressedArray).toString('base64')
-                fs.writeFileSync(filepath, fileContent);
-            });
+                    fileContent = Buffer.from(compressedArray).toString('base64');
+
+                    // Add the decompression code wrapper and loader for the engine where '[code]' will be replaced with
+                    // the Base64 string
+                    // (function() {
+                    //     var engineB64 = '[code]';
+                    //     var compressed = window.convertDataURIToBinary(engineB64);
+                    //     var engineContents = fflate.strFromU8(fflate.decompressSync(compressed));
+                    //
+                    //     var element = document.createElement('script');
+                    //     element.async = false;
+                    //     element.innerText = engineContents;
+                    //     document.head.insertBefore(element, document.head.children[3]);
+                    // })();
+
+                    var wrapperCode = '!function(){var e=window.convertDataURIToBinary("[code]"),n=fflate.strFromU8(fflate.decompressSync(e)),t=document.createElement("script");t.async=!1,t.innerText=n,document.head.insertBefore(t,document.head.children[3])}();';
+                    wrapperCode = wrapperCode.replace('[code]', fileContent);
+                    fs.writeFileSync(filepath, wrapperCode);
+                }
+            })();
 
 
             // 10. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
