@@ -23,7 +23,7 @@
         "patch_xhr_out": false,
         "inline_game_scripts": false,
         "extern_files": {
-            "enable": true,
+            "enabled": true,
             "folder_name": "assets"
         }
     }
