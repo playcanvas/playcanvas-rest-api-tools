@@ -5,6 +5,7 @@ const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
+const fflate = require('fflate');
 
 const shared = require('./shared');
 
@@ -89,6 +90,7 @@ function inlineAssets(projectPath) {
                 var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
 
                 if (config.one_page.mraid_support) {
+                    // // Adds the following code but minified
                     // if (window.mraid) {
                     //     if (mraid.getState() !== 'ready') {
                     //         mraid.addEventListener('ready', configure);
@@ -286,8 +288,29 @@ function inlineAssets(projectPath) {
                 fs.writeFileSync(location, contents);
             })();
 
-            // 9. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
-            // 10. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
+            // 9. Compress the engine file with fflate
+            (function() {
+                addPatchFile('fflate.js');
+                addPatchFile('base64-to-uint8.js');
+
+                console.log("↪️ Compressing the engine file");
+                var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
+                var fileContent = fs.readFileSync(filepath, 'utf-8');
+
+                var buf = fflate.strToU8(fileContent);
+
+                // The default compression method is gzip
+                // Increasing mem may increase performance at the cost of memory
+                // The mem ranges from 0 to 12, where 4 is the default
+                var compressedArray = fflate.compressSync(buf, {level: 6, mem: 8});
+
+                fileContent = Buffer.from(compressedArray).toString('base64')
+                fs.writeFileSync(filepath, fileContent);
+            });
+
+
+            // 10. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
+            // 11. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
             await (async function() {
                 console.log("↪️ Inline JS scripts in index.html");
 

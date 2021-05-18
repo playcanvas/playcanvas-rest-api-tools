@@ -18,6 +18,7 @@
     "base64-js": "^1.5.1",
     "btoa": "^1.2.1",
     "dotenv": "^8.2.0",
+    "fflate": "^0.6.10",
     "node-fetch": "^2.6.1",
     "replace-string": "^3.1.0",
     "terser": "^5.5.1"
