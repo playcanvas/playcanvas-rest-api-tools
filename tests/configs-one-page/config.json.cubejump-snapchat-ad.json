@@ -1,0 +1,33 @@
+{
+    "playcanvas": {
+        "project_id": 796932,
+        "name": "Cube Jump Snapchat Ad",
+        "scenes" : [1155440],
+        "branch_name": "master",
+        "branch_id": "49d50dc7-2e23-4314-8f5c-bd9ec1b5f7aa",
+        "description": "",
+        "preload_bundle": false,
+        "version": "",
+        "release_notes": "",
+        "scripts_concatenate": true,
+        "scripts_sourcemaps": false,
+        "optimize_scene_format": false
+    },
+    "csp": {
+        "style-src": [
+        ],
+        "connect-src": [
+        ]
+    },
+    "one_page": {
+        "patch_xhr_out": false,
+        "inline_game_scripts": true,
+        "extern_files": {
+            "enabled": true,
+            "folder_name": "78fb9255-3033-4fe2-b9e1-355b149229a1",
+            "external_url_prefix": ""
+        },
+        "mraid_support": true,
+        "snapchat_cta": true
+    }
+}

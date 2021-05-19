@@ -20,6 +20,7 @@ function readConfig() {
     config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
     config.one_page.inline_game_scripts = config.one_page.inline_game_scripts || false;
     config.one_page.mraid_support = config.one_page.mraid_support || false;
+    config.one_page.snapchat_cta = config.one_page.snapchat_cta || false;
 
     // Mon 17 May 2021: Backwards compatibility when this used to be a boolean
     // and convert to an object

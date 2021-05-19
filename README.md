@@ -153,7 +153,7 @@ Enabling this will keep the PlayCanvas engine code and game data as separate fil
 
 The option can be found in `config.json` under `one_page`. Set `extern_files.enabled` to true. The files can also be in a separate folder using `extern_files.folder_name` (defaults to the same directory).
 
-In some cases with ad networks, the external files will need to be hosted elsewhere such as a CDN. `extern_files.external_url_prefix` can be used to have the `index.html` reference the files to the CDN. E.g. 
+In some cases with ad networks, the external files will need to be hosted elsewhere such as a CDN. `extern_files.external_url_prefix` can be used to have the `index.html` reference the files to the CDN. E.g.
 
 ```
 "extern_files": {
@@ -165,9 +165,18 @@ In some cases with ad networks, the external files will need to be hosted elsewh
 
 #### MRAID interstitial support
 
-Adds basic support for MRAID API within the PlayCanvas engine and boilerplate code. 
+Adds basic support for MRAID API within the PlayCanvas engine and boilerplate code.
 
 The option can be found in `config.json` under `one_page`. Set `mraid_support` to true.
+
+#### Snapchat ad support
+
+The Snapchat ad network requires the CTA function to be in the `index.html` where the network can replace the with a unique tracking version when it is served to the user. The URL will be set in the Snapchat Ad campaign tool.
+
+The ad project should call `snapchatCta();` as the CTA function instead of `mraid.open('someurl');`.
+
+The option can be found in `config.json` under `one_page`. Set `snapchat_cta` to true.
+
 
 ### Usage
 1. `npm run one-page`

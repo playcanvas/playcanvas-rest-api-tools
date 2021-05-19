@@ -33,6 +33,7 @@
             "folder_name": "",
             "external_url_prefix": ""
         },
-        "mraid_support": false
+        "mraid_support": false,
+        "snapchat_cta": false
     }
 }

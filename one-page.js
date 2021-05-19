@@ -29,6 +29,15 @@ function inlineAssets(projectPath) {
                 );
             };
 
+            var addLibraryFile = function (filename) {
+                var patchLocation = path.resolve(projectPath, filename);
+                fs.copyFileSync('library-files/' + filename, patchLocation);
+                indexContents = indexContents.replace(
+                    '<head>',
+                    '<head>\n    <script src="' + filename + '"></script>'
+                );
+            };
+
             (function () {
                 // XHR request patch. We may need to not use XHR due to restrictions on the hosting service
                 // such as Facebook playable ads. If that's the case, we will add a patch to override http.get
@@ -284,6 +293,14 @@ function inlineAssets(projectPath) {
                 }
 
                 fs.writeFileSync(location, contents);
+            })();
+
+            // Add Snapchat CTA code if needed
+            (function() {
+                if (config.one_page.snapchat_cta) {
+                    console.log("↪️ Adding Snapchat Ad CTA code");
+                    addLibraryFile('snapchat-cta.js');
+                }
             })();
 
             // 9. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
