@@ -1,11 +1,10 @@
 const fs = require('fs')
 const path = require('path')
-const Zip = require('adm-zip');
 const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
-const fflate = require('fflate');
+const lz4 = require('lz4');
 
 const shared = require('./shared');
 
@@ -300,37 +299,30 @@ function inlineAssets(projectPath) {
             // 9. Compress the engine file with fflate
             (function() {
                 if (config.one_page.compress_engine) {
-                    addLibraryFile('fflate.js');
-                    addLibraryFile('base64-to-uint8.js');
+                    addLibraryFile('lz4.js');
 
                     console.log("↪️ Compressing the engine file");
                     var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
-
-                    var buf = fflate.strToU8(fileContent);
-
-                    // The default compression method is gzip
-                    // Increasing mem may increase performance at the cost of memory
-                    // The mem ranges from 0 to 12, where 4 is the default
-                    // Using lowest level possible to reduce decompressing time on client
-                    var compressedArray = fflate.compressSync(buf, {level: 1, mem: 8});
+                    var compressedArray = lz4.encode(fileContent);
 
                     fileContent = Buffer.from(compressedArray).toString('base64');
 
                     // Add the decompression code wrapper and loader for the engine where '[code]' will be replaced with
                     // the Base64 string
                     // (function() {
+                    //     var lz4 = require('lz4');
+                    //     var Buffer = require('buffer').Buffer;
                     //     var engineB64 = '[code]';
-                    //     var compressed = window.convertDataURIToBinary(engineB64);
-                    //     var engineContents = fflate.strFromU8(fflate.decompressSync(compressed));
-                    //
+                    //     var compressed = new Buffer(engineB64, 'base64');
+                    //     var engineContents = lz4.decode(compressed)
                     //     var element = document.createElement('script');
                     //     element.async = false;
                     //     element.innerText = engineContents;
                     //     document.head.insertBefore(element, document.head.children[3]);
                     // })();
 
-                    var wrapperCode = '!function(){var e=window.convertDataURIToBinary("[code]"),n=fflate.strFromU8(fflate.decompressSync(e)),t=document.createElement("script");t.async=!1,t.innerText=n,document.head.insertBefore(t,document.head.children[3])}();';
+                    var wrapperCode = '!function(){var e=require("lz4"),r=require("buffer").Buffer,o=new r("[code]","base64"),c=e.decode(o);var a=document.createElement("script");a.async=!1,a.innerText=c,document.head.insertBefore(a,document.head.children[3])}();';
                     wrapperCode = wrapperCode.replace('[code]', fileContent);
                     fs.writeFileSync(filepath, wrapperCode);
                 }
