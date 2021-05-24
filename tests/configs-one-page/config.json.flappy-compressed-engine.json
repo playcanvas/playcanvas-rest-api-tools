@@ -1,10 +1,10 @@
 {
     "playcanvas": {
-        "project_id": 395232,
-        "name": "X Wing Extern Files",
-        "scenes" : [427806],
+        "project_id": 375389,
+        "name": "Flappy Bird Compressed Engine",
+        "scenes" : [404993],
         "branch_name": "master",
-        "branch_id": "dfbe2442-0acf-49c2-8f5f-f32aa7aa6729",
+        "branch_id": "605cd6ab-17b4-4dac-9960-ad439567c957",
         "description": "",
         "preload_bundle": false,
         "version": "",
@@ -22,9 +22,8 @@
     "one_page": {
         "patch_xhr_out": false,
         "inline_game_scripts": false,
-        "extern_files": {
-            "enabled": true,
-            "folder_name": "assets"
-        }
+        "extern_files": false,
+        "mraid_support": false,
+        "compress_engine": true
     }
 }
