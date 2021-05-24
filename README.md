@@ -171,12 +171,12 @@ The option can be found in `config.json` under `one_page`. Set `mraid_support` t
 
 #### Compress engine code
 
-Compresses the engine file to save 700KB on the final file size, leaving more room for games assets. Especially with playable ad networks only allowing 2MB for a single HTML file. 
+Compresses the engine file to save 500KB on the final file size, leaving more room for games assets. Especially with playable ad networks only allowing 2MB for a single HTML file. 
 
-This should only be used if you really need the extra space as it adds extra initialisation time to decompress the engine code at runtime. Benchmarks below:
+This should only be used if you need the extra space as it adds extra initialisation time to decompress the engine code at runtime. Benchmarks below:
 
-- Google Pixel 2XL: ~600ms
-- Samsung Galaxy S7: ~1800ms
+- Google Pixel 2XL: ~180ms
+- Samsung Galaxy S7: ~180ms
 
 The option can be found in `config.json` under `one_page`. Set `compress_engine` to true.
 
