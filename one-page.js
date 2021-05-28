@@ -211,10 +211,18 @@ function inlineAssets(projectPath) {
                         break;
 
                         case "js":
-                            mimeprefix = "data:text/javascript";
-                            // If it is already minified then don't try to minify it again
-                            if (!url.endsWith('.min.js')) {
-                                fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            // Check loading type as it may be added to the index.html (before/after engine) directly
+                            if (asset.data.loadingType === 0) {
+                                mimeprefix = "data:text/javascript";
+                                // If it is already minified then don't try to minify it again
+                                if (!url.endsWith('.min.js')) {
+                                    fileContents = (await minify(fileContents, {
+                                        keep_fnames: true,
+                                        ecma: '5'
+                                    })).code;
+                                }
+                            } else {
+                                fileContents = '';
                             }
                         break;
                     }
