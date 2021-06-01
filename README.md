@@ -136,6 +136,11 @@ There are some limitations:
 - ~~Spine runtime is not supported~~ Now supported since since [PR#42](https://github.com/playcanvas/playcanvas-spine/commit/77514b0bc6a5c87263d6225f10eb011096ceed2d)
 - Any code relying on asset URLs being a file path will not work as they will be Base64 encoded
 
+As Ammo is not supported for physics, alternatives are:
+- cannon.js for 3D physics ([PlayCanvas integration here](https://playcanvas.com/project/793652/overview/cannon-physics-basic-integration))
+- p2.js for 2D physics ([PlayCanvas integration here](https://playcanvas.com/project/446127/overview/p2js-integration))
+- Using PlayCanvas [Bounding Sphere](https://developer.playcanvas.com/en/api/pc.BoundingSphere.html), [Bounding Box](https://developer.playcanvas.com/en/api/pc.BoundingBox.html), [Orientated Box](https://developer.playcanvas.com/en/api/pc.OrientedBox.html) for simple overlap checking and raycasting
+
 ### Experimental features
 
 #### Remove XHR requests
