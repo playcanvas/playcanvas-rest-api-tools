@@ -176,7 +176,7 @@ The option can be found in `config.json` under `one_page`. Set `mraid_support` t
 
 #### Snapchat ad support
 
-The Snapchat ad network requires the CTA function to be in the `index.html` where the network can replace the with a unique tracking version when it is served to the user. The URL will be set in the Snapchat Ad campaign tool.
+The Snapchat ad network requires the CTA function to be in the `index.html` where the network can replace it with a unique tracking version when it is served to the user. The URL will be set in the Snapchat Ad campaign tool.
 
 The ad project should call `snapchatCta();` as the CTA function instead of `mraid.open('someurl');`.
 
