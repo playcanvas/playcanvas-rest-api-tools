@@ -1,10 +1,10 @@
 const fs = require('fs')
 const path = require('path')
-const Zip = require('adm-zip');
 const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
+const lz4 = require('lz4');
 
 const shared = require('./shared');
 
@@ -98,6 +98,7 @@ function inlineAssets(projectPath) {
                 var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
 
                 if (config.one_page.mraid_support) {
+                    // // Adds the following code but minified
                     // if (window.mraid) {
                     //     if (mraid.getState() !== 'ready') {
                     //         mraid.addEventListener('ready', configure);
@@ -210,10 +211,18 @@ function inlineAssets(projectPath) {
                         break;
 
                         case "js":
-                            mimeprefix = "data:text/javascript";
-                            // If it is already minified then don't try to minify it again
-                            if (!url.endsWith('.min.js')) {
-                                fileContents = (await minify(fileContents, { keep_fnames: true, ecma: '5' })).code;
+                            // Check loading type as it may be added to the index.html (before/after engine) directly
+                            if (asset.data.loadingType === 0) {
+                                mimeprefix = "data:text/javascript";
+                                // If it is already minified then don't try to minify it again
+                                if (!url.endsWith('.min.js')) {
+                                    fileContents = (await minify(fileContents, {
+                                        keep_fnames: true,
+                                        ecma: '5'
+                                    })).code;
+                                }
+                            } else {
+                                fileContents = '';
                             }
                         break;
                     }
@@ -303,8 +312,41 @@ function inlineAssets(projectPath) {
                 }
             })();
 
-            // 9. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
-            // 10. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
+            // 9. Compress the engine file with fflate
+            (function() {
+                if (config.one_page.compress_engine) {
+                    addLibraryFile('lz4.js');
+
+                    console.log("↪️ Compressing the engine file");
+                    var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
+                    var fileContent = fs.readFileSync(filepath, 'utf-8');
+                    var compressedArray = lz4.encode(fileContent);
+
+                    fileContent = Buffer.from(compressedArray).toString('base64');
+
+                    // Add the decompression code wrapper and loader for the engine where '[code]' will be replaced with
+                    // the Base64 string
+                    // (function() {
+                    //     var lz4 = require('lz4');
+                    //     var Buffer = require('buffer').Buffer;
+                    //     var engineB64 = '[code]';
+                    //     var compressed = new Buffer(engineB64, 'base64');
+                    //     var engineContents = lz4.decode(compressed)
+                    //     var element = document.createElement('script');
+                    //     element.async = false;
+                    //     element.innerText = engineContents;
+                    //     document.head.insertBefore(element, document.head.children[3]);
+                    // })();
+
+                    var wrapperCode = '!function(){var e=require("lz4"),r=require("buffer").Buffer,o=new r("[code]","base64"),c=e.decode(o);var a=document.createElement("script");a.async=!1,a.innerText=c,document.head.insertBefore(a,document.head.children[3])}();';
+                    wrapperCode = wrapperCode.replace('[code]', fileContent);
+                    fs.writeFileSync(filepath, wrapperCode);
+                }
+            })();
+
+
+            // 10. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
+            // 11. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
             await (async function() {
                 console.log("↪️ Inline JS scripts in index.html");
 

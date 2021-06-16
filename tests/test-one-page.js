@@ -24,6 +24,12 @@ function sleep(ms) {
     for (let i = 0; i < files.length; ++i) {
         let timeStart = performance.now();
         let file = files[i];
+
+        // Skip hidden files
+        if (file.startsWith('.')) {
+            continue;
+        }
+
         let fromPath = path.join(configsFolder, file);
         let toPath = path.join('', 'config.json');
 

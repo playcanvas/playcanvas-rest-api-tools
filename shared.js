@@ -33,6 +33,8 @@ function readConfig() {
         }
     }
 
+    config.one_page.compress_engine = config.one_page.compress_engine || '';
+
     onePageExternFiles = onePageExternFiles || { enabled: false };
     onePageExternFiles.folder_name = onePageExternFiles.folder_name || '';
     onePageExternFiles.external_url_prefix = onePageExternFiles.external_url_prefix || '';
