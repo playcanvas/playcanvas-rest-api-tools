@@ -304,6 +304,14 @@ function inlineAssets(projectPath) {
                 fs.writeFileSync(location, contents);
             })();
 
+            // Add Snapchat CTA code if needed
+            (function() {
+                if (config.one_page.snapchat_cta) {
+                    console.log("↪️ Adding Snapchat Ad CTA code");
+                    addLibraryFile('snapchat-cta.js');
+                }
+            })();
+
             // 9. Compress the engine file with fflate
             (function() {
                 if (config.one_page.compress_engine) {
