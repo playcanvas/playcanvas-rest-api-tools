@@ -120,8 +120,9 @@ function inlineAssets(projectPath) {
                 // cssElement = document.createElement('style');
                 // cssElement.innerHTML =css;
                 // document.head.appendChild(cssElement);
-                //regex = /if \(document\.head\.querySelector\) {[\s\S]*?}/;
-                //contents = contents.replace(regex, 'cssElement=document.createElement("style"),cssElement.innerHTML=css,document.head.appendChild(cssElement);');
+
+                regex = /if \(document\.head\.querySelector\) {[\s\S]*?}/;
+                contents = contents.replace(regex, 'cssElement=document.createElement("style"),cssElement.innerHTML=css,document.head.appendChild(cssElement);');
 
                 fs.writeFileSync(location, contents);
             })();
