@@ -77,6 +77,9 @@ function inlineAssets(projectPath) {
                     var cssRegex = /#application-canvas\.fill-mode-NONE[\s\S]*?}/;
                     cssContents = cssContents.replace(cssRegex, '#application-canvas.fill-mode-NONE { margin: 0; width: 100%; height: 100%; }');
                     fs.writeFileSync(cssLocation, cssContents);
+
+                    console.log("↪️ Adding mraid getMaxSize() call in pc.Application#resizeCanvas");
+                    addPatchFile('one-page-mraid-resize-canvas.js');
                 }
             })();
 
@@ -111,6 +114,16 @@ function inlineAssets(projectPath) {
                 } else {
                     contents = contents.replace(regex, 'configure();');
                 }
+
+                // // Adds the following code for better compatibility with ad networks on accessing the CSS styles
+                // // in configureCss()
+                // cssElement = document.createElement('style');
+                // cssElement.innerHTML =css;
+                // document.head.appendChild(cssElement);
+
+                regex = /if \(document\.head\.querySelector\) {[\s\S]*?}/;
+                contents = contents.replace(regex, 'cssElement=document.createElement("style"),cssElement.innerHTML=css,document.head.appendChild(cssElement);');
+
                 fs.writeFileSync(location, contents);
             })();
 
