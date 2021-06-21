@@ -9,9 +9,8 @@ const lz4 = require('lz4');
 const shared = require('./shared');
 
 const config = shared.readConfig();
-const EXTERN_FILES = [
-    'playcanvas-stable.min.js',
-    '__settings__.js'
+
+var externFiles = [
 ];
 
 function inlineAssets(projectPath) {
@@ -345,12 +344,12 @@ function inlineAssets(projectPath) {
             })();
 
 
-            // 10. Replace references to __settings__.js, __start__.js in index.html with contents of those files.
+            // 10. Replace references to all scripts in index.html with contents of those files.
             // 11. Replace playcanvas-stable.min.js in index.html with a base64 string of the file.
             await (async function() {
                 console.log("↪️ Inline JS scripts in index.html");
 
-                // If true, we will not embed the engine or __settings__.js file (which contains the data)
+                // If true, we will not embed the JS files
                 var externFilesConfig = config.one_page.extern_files;
                 var urlRegex = /<script src="(.*)"><\/script>/g;
                 var urlMatches = [...indexContents.matchAll(urlRegex)];
@@ -358,14 +357,13 @@ function inlineAssets(projectPath) {
                 for (const element of urlMatches) {
                     var url = element[1];
 
-                    if (externFilesConfig.enabled) {
-                        if (EXTERN_FILES.includes(url)) {
-                            continue;
-                        }
-                    }
-
                     var filepath = path.resolve(projectPath, url);
                     if (!fs.existsSync(filepath)) {
+                        continue;
+                    }
+
+                    if (externFilesConfig.enabled) {
+                        externFiles.push(url);
                         continue;
                     }
 
@@ -403,7 +401,7 @@ async function packageFiles (projectPath) {
                 fs.mkdirSync(assetsPath, {recursive: true});
 
                 // Copy files to a new dir
-                for (const filename of EXTERN_FILES) {
+                for (const filename of externFiles) {
                     fs.copyFileSync(path.resolve(projectPath, filename), path.resolve(assetsPath, filename));
                 }
 
@@ -414,7 +412,7 @@ async function packageFiles (projectPath) {
 
                 var indexContents = fs.readFileSync(indexLocation, 'utf-8');
 
-                for (const filename of EXTERN_FILES) {
+                for (const filename of externFiles) {
                     indexContents = indexContents.replace(
                         '<script src="' + filename + '"></script>',
                         '<script src="' + assetFilePrefix + filename + '"></script>'
