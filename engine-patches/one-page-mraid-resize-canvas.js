@@ -15,7 +15,7 @@
             windowHeight = mraidSize.height;
         }
 
-        if (this._fillMode === FILLMODE_KEEP_ASPECT) {
+        if (this._fillMode === pc.FILLMODE_KEEP_ASPECT) {
             var r = this.graphicsDevice.canvas.width / this.graphicsDevice.canvas.height;
             var winR = windowWidth / windowHeight;
 
@@ -26,7 +26,7 @@
                 height = windowHeight;
                 width = height * r;
             }
-        } else if (this._fillMode === FILLMODE_FILL_WINDOW) {
+        } else if (this._fillMode === pc.FILLMODE_FILL_WINDOW) {
             width = windowWidth;
             height = windowHeight;
         }
