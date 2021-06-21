@@ -29,7 +29,7 @@
         "patch_xhr_out": false,
         "inline_game_scripts": false,
         "extern_files": {
-            "enable": false,
+            "enabled": false,
             "folder_name": "",
             "external_url_prefix": ""
         },
