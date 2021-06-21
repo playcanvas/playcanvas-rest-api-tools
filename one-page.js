@@ -78,6 +78,9 @@ function inlineAssets(projectPath) {
                     var cssRegex = /#application-canvas\.fill-mode-NONE[\s\S]*?}/;
                     cssContents = cssContents.replace(cssRegex, '#application-canvas.fill-mode-NONE { margin: 0; width: 100%; height: 100%; }');
                     fs.writeFileSync(cssLocation, cssContents);
+
+                    console.log("↪️ Adding mraid getMaxSize() call in pc.Application#resizeCanvas");
+                    addPatchFile('one-page-mraid-resize-canvas.js');
                 }
             })();
 
