@@ -223,3 +223,30 @@ $ npm run one-page
 Please use the following command to create the most common outputs for the one-page job with public projects owned by the PlayCanvas team.
 
 1. `npm run test-one-page`
+
+
+## Cordova Publish
+
+This uses the [Download App REST API](https://developer.playcanvas.com/en/user-manual/api/app-download/) to download a build and also prepare it to be used with Cordova to create a native app.
+
+Currently, it does the following actions:
+* Adds `cordova.js` as a script header in `index.html`
+* Converts all audio assets to Base64 so they can be loaded on iOS
+
+### Usage
+1. `npm run cordova-publish`
+
+#### Example
+```
+$ npm run cordova-publish
+    ✔️ Requested build from Playcanvas
+    ↪️ Polling job  858473
+       job still running
+       will wait 1s and then retry
+    ↪️ Polling job  858473
+    ✔️ Job complete!
+    ✔ Downloading zip https://somefile.zip
+    ✔️ Unzipping  /somefile_Download.zip
+    ↪️ Base64 encode audio assets config.json
+    ✔️ Zipping it all back again
+```
