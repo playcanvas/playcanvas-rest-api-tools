@@ -324,7 +324,7 @@ function inlineAssets(projectPath) {
                 }
             })();
 
-            // 9. Compress the engine file with fflate
+            // 9. Compress the engine file with lz4
             (function() {
                 if (config.one_page.compress_engine) {
                     addLibraryFile('lz4.js');
