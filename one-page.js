@@ -306,11 +306,8 @@ function inlineAssets(projectPath) {
                     // handle the canvas dimensions.
 
                     // Also remove use of marginTop as we are no longer using this
-                    regex = /var reflow = function \(\) {[\s\S]*?};/
-                    contents = contents.replace(regex, "var reflow=function(){canvas.style.width=\"\",canvas.style.height=\"\",app.resizeCanvas()};");
-                } else {
-                    regex = /app\.resizeCanvas\(canvas\.width, canvas\.height\);.*canvas\.style\.height = '';/s;
-                    contents = contents.replace(regex, "canvas.style.width = '';canvas.style.height = '';app.resizeCanvas(canvas.width, canvas.height);");
+                    regex = /reflow: function \(app, canvas\) {[\s\S]*?2000\);[\s\S]*?}[\s\S]*?}/
+                    contents = contents.replace(regex, "reflow: function(app, canvas){canvas.style.width=\"\",canvas.style.height=\"\",app.resizeCanvas()}");
                 }
 
                 fs.writeFileSync(location, contents);
