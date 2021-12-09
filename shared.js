@@ -1,8 +1,10 @@
-const fetch = require('node-fetch')
-const dotenv = require('dotenv')
-const fs = require('fs')
-const path = require('path')
-const Zip = require('adm-zip');
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import Zip from 'adm-zip';
+
+const __dirname = path.resolve();
 
 
 function readConfig() {
@@ -176,7 +178,8 @@ function unzipProject(zipLocation, unzipFolderName) {
         try {
             var tempFolder = path.resolve(path.dirname(zipLocation), unzipFolderName);
             if (fs.existsSync(tempFolder)) {
-                fs.rmdirSync(tempFolder, {recursive:true});
+                //fs.rmdirSync(tempFolder, {recursive:true});
+                fs.rmSync(tempFolder, { recursive: true });
             }
             fs.mkdirSync(tempFolder);
             zipFile.extractAllTo(tempFolder, true);
@@ -197,9 +200,11 @@ function zipProject(rootFolder, targetLocation) {
             fs.mkdirSync(path.dirname(output));
         }
         zip.writeZip(output);
-        fs.rmdirSync(rootFolder, {recursive:true});
+        //fs.rmdirSync(rootFolder, {recursive:true});
+        fs.rmSync(rootFolder, { recursive: true });
         resolve(output);
     });
 }
 
-module.exports = { readConfig, sleep, downloadProject, archiveProject, unzipProject, zipProject};
+const shared = { readConfig: readConfig, sleep: sleep, downloadProject: downloadProject, archiveProject: archiveProject, unzipProject: unzipProject, zipProject: zipProject};
+export { shared };

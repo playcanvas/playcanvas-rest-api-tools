@@ -2,6 +2,7 @@
   "name": "rest-api-tools",
   "version": "1.0.0",
   "description": "A suite of node scripts to use the PlayCanvas REST API",
+  "type": "module",
   "scripts": {
     "download": "node download-project.js",
     "csp": "node csp-patch.js",
@@ -22,5 +23,9 @@
     "node-fetch": "^2.6.1",
     "replace-string": "^3.1.0",
     "terser": "^5.5.1"
+  },
+  "devDependencies": {
+    "imagemin": "^8.0.1",
+    "imagemin-webp": "^6.0.0"
   }
 }
