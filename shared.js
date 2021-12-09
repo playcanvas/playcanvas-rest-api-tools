@@ -100,7 +100,8 @@ function downloadProject(config, directory) {
                 "release_notes": config.playcanvas.release_notes,
                 "scripts_concatenate": config.playcanvas.scripts_concatenate,
                 "scripts_minify": config.playcanvas.scripts_minify,
-                "optimize_scene_format": config.playcanvas.optimize_scene_format
+                "optimize_scene_format": config.playcanvas.optimize_scene_format,
+                "engine_version": config.playcanvas.engine_version
             }),
             headers: {
                 'Content-Type': 'application/json',
