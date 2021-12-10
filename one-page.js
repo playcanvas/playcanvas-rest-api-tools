@@ -52,7 +52,9 @@ function inlineAssets(projectPath) {
                             plugins: [
                                 imageminWebp(
                                     {
-                                        lossless: true
+                                        lossless: true,
+                                        alphaQuality: 100,
+                                        quality: 100
                                     }
                                 )
                             ]
@@ -106,6 +108,7 @@ function inlineAssets(projectPath) {
 
 // Force not to concatenate scripts as they need to be inlined
 const zipLocation = "temp/downloads/ZRS-no-compression.zip"
+//const zipLocation = "temp/downloads/WebP-test.zip"
 shared.unzipProject(zipLocation, 'contents')
     .then(inlineAssets)
     .then((projectPath) => shared.zipProject(projectPath, 'temp/out/webp.zip'))
