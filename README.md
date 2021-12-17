@@ -48,7 +48,7 @@ This uses the [Download App REST API](https://developer.playcanvas.com/en/user-m
 
 It will unzip the build, add the [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) rules to the `index.html` file and rezip the project.
 
-Please configure the CSP lists in `config.json` under `csp`.
+Please configure the CSP lists in `config.json` under `csp`. There is an option to also patch the preload bundles. To do so, set `patch_preload_bundles` to be true. 
 
 ### Usage
 1. `npm run csp`
