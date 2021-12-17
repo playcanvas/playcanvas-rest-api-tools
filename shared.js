@@ -15,6 +15,7 @@ function readConfig() {
     config.csp = config.csp || {};
     config.csp['style-src'] = config.csp['style-src'] || [];
     config.csp['connect-src'] = config.csp['connect-src'] || [];
+    config.csp.patch_preload_bundles = config.csp.patch_preload_bundles || false;
 
     config.one_page = config.one_page || {};
     config.one_page.patch_xhr_out = config.one_page.patch_xhr_out || false;
