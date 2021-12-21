@@ -24,7 +24,8 @@
             "blob:",
             "data:",
             "https://www.google-analytics.com"
-        ]
+        ],
+        "patch_preload_bundles": false
     },
     "one_page": {
         "patch_xhr_out": false,
