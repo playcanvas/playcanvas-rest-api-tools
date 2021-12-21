@@ -1,8 +1,5 @@
-const fetch = require('node-fetch')
-const dotenv = require('dotenv')
 const fs = require('fs')
 const path = require('path')
-const Zip = require('adm-zip');
 
 const shared = require('./shared');
 
@@ -12,20 +9,21 @@ const config = shared.readConfig();
 function updatePreloadBundles(rootFolder) {
     return new Promise((resolve) => {
         (async function() {
-            // Check if the preload bundles exist
-            const updateBundle = async function(bundleName) {
-                if (fs.existsSync(bundleName)) {
-                    console.log("↪️ Updating " + path.basename(bundleName));
+            if (config.csp.patch_preload_bundles) {
+                // Check if the preload bundles exist
+                const updateBundle = async function (bundleName) {
+                    if (fs.existsSync(bundleName)) {
+                        console.log("↪️ Updating " + path.basename(bundleName));
 
-                    const tempFolder = await shared.unzipProject(bundleName, 'bundle-temp');
-                    await addCspMetadata(tempFolder);
-                    await shared.zipProject(tempFolder, bundleName);
+                        const tempFolder = await shared.unzipProject(bundleName, 'bundle-temp');
+                        await addCspMetadata(tempFolder);
+                        await shared.zipProject(tempFolder, bundleName);
+                    }
                 }
+
+                await updateBundle(rootFolder + '/preload-android.zip');
+                await updateBundle(rootFolder + '/preload-ios.zip');
             }
-
-            await updateBundle(rootFolder + '/preload-android.zip');
-            await updateBundle(rootFolder + '/preload-ios.zip');
-
             resolve(rootFolder);
         })();
     });
