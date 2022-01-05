@@ -3,11 +3,13 @@ import * as path from 'path';
 import imagemin from 'imagemin';
 import imageminWebp from 'imagemin-webp';
 import { shared } from './shared.js';
+import { spawn, spawnSync } from 'child_process';
 
 const config = shared.readConfig();
 
 var externFiles = [
 ];
+
 
 function inlineAssets(projectPath) {
     return new Promise((resolve, reject) => {
@@ -47,26 +49,46 @@ function inlineAssets(projectPath) {
 
                     if (extension === 'png') {
                         console.log(filepath);
-                        await imagemin([filepath], {
-                            destination: path.dirname(filepath),
-                            plugins: [
-                                imageminWebp(
-                                    {
-                                        lossless: true,
-                                        alphaQuality: 100,
-                                        quality: 100
-                                    }
-                                )
-                            ]
-                        });
+                        // await imagemin([filepath], {
+                        //     destination: path.dirname(filepath),
+                        //     plugins: [
+                        //         imageminWebp(
+                        //             {
+                        //                 lossless: true,
+                        //                 alphaQuality: 100,
+                        //                 quality: 100
+                        //             }
+                        //         )
+                        //     ]
+                        // });
 
+                        spawnSync('cwebp', ['-lossless', '-q', '100', '-alpha_q', '100', '-exact', filepath, '-o', filepath.replace('png', 'webp')]);
                         fs.unlinkSync(filepath);
 
                         asset.file.url = url.replace('.png', '.webp');
                     }
 
                     if (extension === 'jpeg' || extension === 'jpg') {
+                        console.log(filepath);
+                        // await imagemin([filepath], {
+                        //     destination: path.dirname(filepath),
+                        //     plugins: [
+                        //         imageminWebp(
+                        //             {
+                        //                 lossless: false,
+                        //                 alphaQuality: 100,
+                        //                 quality: 80
+                        //             }
+                        //         )
+                        //     ]
+                        // });
 
+                        spawnSync('cwebp', ['-q', '80', filepath, '-o', filepath.replace('jpeg', 'webp').replace('jpg', 'webp')]);
+
+                        fs.unlinkSync(filepath);
+
+                        asset.file.url = url.replace('.jpeg', '.webp');
+                        asset.file.url = url.replace('.jpg', '.webp');
                     }
 
                     // var fileContents;
@@ -111,6 +133,6 @@ const zipLocation = "temp/downloads/ZRS-no-compression.zip"
 //const zipLocation = "temp/downloads/WebP-test.zip"
 shared.unzipProject(zipLocation, 'contents')
     .then(inlineAssets)
-    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/webp.zip'))
+    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/zrs-webp.zip'))
     .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
