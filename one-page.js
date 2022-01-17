@@ -66,6 +66,7 @@ function inlineAssets(projectPath) {
                         fs.unlinkSync(filepath);
 
                         asset.file.url = url.replace('.png', '.webp');
+                        console.log(asset.file.url);
                     }
 
                     if (extension === 'jpeg' || extension === 'jpg') {
@@ -87,8 +88,8 @@ function inlineAssets(projectPath) {
 
                         fs.unlinkSync(filepath);
 
-                        asset.file.url = url.replace('.jpeg', '.webp');
-                        asset.file.url = url.replace('.jpg', '.webp');
+                        asset.file.url = url.replace('.jpeg', '.webp').replace('.jpg', '.webp');
+                        console.log(asset.file.url);
                     }
 
                     // var fileContents;
@@ -129,10 +130,10 @@ function inlineAssets(projectPath) {
 }
 
 // Force not to concatenate scripts as they need to be inlined
-const zipLocation = "temp/downloads/ZRS-no-compression.zip"
+const zipLocation = "temp/downloads/FunRun_1035577_env.zip"
 //const zipLocation = "temp/downloads/WebP-test.zip"
 shared.unzipProject(zipLocation, 'contents')
     .then(inlineAssets)
-    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/zrs-webp.zip'))
+    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/FunRun_1035577_env.zip'))
     .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
