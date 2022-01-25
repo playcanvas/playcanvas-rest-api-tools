@@ -50,12 +50,14 @@ function getCspMetadataTag() {
     var tag = "<meta http-equiv=\"Content-Security-Policy\" content=\"{0}\" />"
     var content = "";
     for (var key in config.csp) {
-        content += key;
-        for (var i in config.csp[key]) {
-            var value = config.csp[key][i];
-            content += " " + value
+        if (key !== 'patch_preload_bundles') {
+            content += key;
+            for (var i in config.csp[key]) {
+                var value = config.csp[key][i];
+                content += " " + value
+            }
+            content += "; "
         }
-        content += "; "
     }
 
     return tag.replace("{0}", content);
