@@ -49,7 +49,7 @@ function convertAssetsToWebP(projectPath) {
                         console.log('   ' + filepath);
 
                         if (fileExists) {
-                            spawnSync('cwebp', ['-lossless', '-q', '100', '-alpha_q', '100', '-exact', filepath, '-o', filepath.replace('png', 'webp')]);
+                            spawnSync('cwebp', ['-q', '100', '-alpha_q', '100', '-exact', filepath, '-o', filepath.replace('png', 'webp')]);
                             fs.unlinkSync(filepath);
                         }
 
@@ -103,11 +103,11 @@ function updatePreloadBundles(rootFolder) {
 
 
 // Force not to concatenate scripts as they need to be inlined
-const zipLocation = "temp/downloads/Bitmoji Plaza_WithCSP.zip"
+const zipLocation = "temp/downloads/ZRS-no-compression.zip"
 //const zipLocation = "temp/downloads/WebP-test.zip"
 shared.unzipProject(zipLocation, 'contents')
     .then(convertAssetsToWebP)
     .then(updatePreloadBundles)
-    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/Bitmoji Plaza_WithCSP WebP.zip'))
+    .then((projectPath) => shared.zipProject(projectPath, 'temp/out/ZRS-no-compression WebP.zip'))
     .then(outputHtml => console.log("Success", outputHtml))
     .catch(err => console.log("Error", err));
