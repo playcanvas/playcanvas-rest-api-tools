@@ -298,11 +298,10 @@ function inlineAssets(projectPath) {
                     var jsonContents = fs.readFileSync(filepath, 'utf-8');
 
                     // Copy the JSON string here but parse at runtime
+                    // JSON.stringify the JSON string to escape characters properly
                     var code = "JSON.parse(" + JSON.stringify(jsonContents) + ")";
 
-                    // replaceString function doesn't like `'` for some reason so
-                    // falling back to the standard string.replace
-                    contents = contents.replace(match[1], code);
+                    contents = replaceString(contents, match[1], code);
                 }
 
                 jsonToBase64(/SCENE_PATH = "(.*)";/i);
