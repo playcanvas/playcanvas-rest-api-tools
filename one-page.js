@@ -54,6 +54,11 @@ function inlineAssets(projectPath) {
                     addPatchFile('one-page-inline-game-scripts.js');
                 }
 
+                // Patch the engine app configure function to take a JSON object instead of a URL
+                // so we don't need to Base64 the config.json and take another ~30% hit on file size
+                console.log("↪️ Adding app configure engine patch");
+                addPatchFile('one-page-app-configure-json.js');
+
                 // MRAID support needs to include the mraid.js file and also force the app to use filltype NONE
                 // so that it fits in the canvas that is sized by the MRAID implementation on the app. This requires
                 // patching the CSS too to ensure it is placed correctly in the Window
@@ -267,7 +272,7 @@ function inlineAssets(projectPath) {
 
 
             // 7. In __settings__.js, change the SCENE_PATH to a base64 string of the scene file.
-            // 8. In __settings__.js, change the CONFIG_FILENAME to a base64 string of the config.json file.
+            // 8. In __settings__.js, inline the JSON from the config.json file and assign it to CONFIG_FILENAME
             (function() {
                 console.log("↪️ Base64 encode the scene JSON and config JSON files");
 
@@ -285,8 +290,22 @@ function inlineAssets(projectPath) {
                     contents = replaceString(contents, match[1], "data:application/json;base64," + b64);
                 };
 
+                var assignJsonObject = function(regex) {
+                    var match = contents.match(regex);
+
+                    // Assume match
+                    var filepath = path.resolve(projectPath, match[2]);
+                    var jsonContents = fs.readFileSync(filepath, 'utf-8');
+
+                    // Copy the JSON string here but parse at runtime
+                    // JSON.stringify the JSON string to escape characters properly
+                    var code = "JSON.parse(" + JSON.stringify(jsonContents) + ")";
+
+                    contents = replaceString(contents, match[1], code);
+                }
+
                 jsonToBase64(/SCENE_PATH = "(.*)";/i);
-                jsonToBase64(/CONFIG_FILENAME = "(.*)"/i);
+                assignJsonObject(/CONFIG_FILENAME = ("(.*)")/i);
 
                 fs.writeFileSync(location, contents);
             })();
