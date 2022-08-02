@@ -23,7 +23,7 @@
             "'self'",
             "blob:",
             "data:",
-            "https://www.google-analytics.com"
+            "https://*.google-analytics.com"
         ],
         "patch_preload_bundles": false
     },
