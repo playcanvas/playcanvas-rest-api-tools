@@ -220,6 +220,7 @@ function inlineAssets(projectPath) {
                         case "css":
                         case "html":
                         case "txt":
+                        case "glsl":
                             mimeprefix = "data:text/plain";
                         break;
 
