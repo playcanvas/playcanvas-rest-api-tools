@@ -431,12 +431,11 @@ async function packageFiles (projectPath) {
 
                 // Copy files to a new dir
                 for (const filename of externFiles) {
-                    // As the file could also be sub directories, we need to recursively create
+                    // As the file could also be in sub directories, we need to recursively create
                     // folders in the file name path
                     var filenameAssetsPath = path.resolve(assetsPath, filename);
                     var targetAssetsPath = path.dirname(filenameAssetsPath);
                     fs.mkdirSync(targetAssetsPath, {recursive: true});
-
                     fs.copyFileSync(path.resolve(projectPath, filename), filenameAssetsPath);
                 }
 
