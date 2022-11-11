@@ -36,7 +36,8 @@
             "external_url_prefix": ""
         },
         "mraid_support": false,
-        "snapchat_cta": false,
+        "cta_option": false,
+        "adOrientation": false,
         "compress_engine": false
     }
 }

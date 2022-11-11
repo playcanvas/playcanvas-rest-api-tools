@@ -333,14 +333,6 @@ function inlineAssets(projectPath) {
                 fs.writeFileSync(location, contents);
             })();
 
-            // Add Snapchat CTA code if needed
-            (function() {
-                if (config.one_page.snapchat_cta) {
-                    console.log("↪️ Adding Snapchat Ad CTA code");
-                    addLibraryFile('snapchat-cta.js');
-                }
-            })();
-
             // 9. Compress the engine file with lz4
             (function() {
                 if (config.one_page.compress_engine) {
@@ -370,6 +362,36 @@ function inlineAssets(projectPath) {
                     var wrapperCode = '!function(){var e=require("lz4"),r=require("buffer").Buffer,o=new r("[code]","base64"),c=e.decode(o);var a=document.createElement("script");a.async=!1,a.innerText=c,document.head.insertBefore(a,document.head.children[3])}();';
                     wrapperCode = wrapperCode.replace('[code]', fileContent);
                     fs.writeFileSync(filepath, wrapperCode);
+                }
+            })();
+
+            // Add Snapchat/Google CTA code if needed
+            (function() {
+                switch(config.one_page.cta_option) {
+                case 'snapchat':
+                    console.log("↪️ Adding Snapchat Ad CTA code");
+                    addLibraryFile('snapchat-cta.js');
+                break;
+                case 'google':
+                    console.log("↪️ Adding Google Ad CTA code");
+                    var allowedValues = ["portrait", "landscape", "portrait,landscape"];
+                    if(config.one_page.adOrientation && allowedValues.includes(config.one_page.adOrientation)) {
+                        var orientation = config.one_page.adOrientation;
+                        var size = (orientation == 'portrait') ? 'width=320,height=480' : 'width=480,height=320\n';
+                        var googlePrimaryAssets = `    <meta name="ad.orientation" content="${orientation}">\n    <meta name="ad.size" content="${size}">`;
+                        var exitApi = `<script type="text/javascript" src="https://tpc.googlesyndication.com/pagead/gadgets/html5/api/exitapi.js"></script>\n`;
+
+                        indexContents = indexContents.replace(
+                        '<head>',
+                        `<head>\n    ${exitApi + googlePrimaryAssets}`
+                        );
+                    }
+
+                    else {
+                        console.log('Error: Invalid Google Ad Orientation supplied');
+                    }
+                    
+                break;
                 }
             })();
 
