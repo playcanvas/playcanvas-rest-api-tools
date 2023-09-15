@@ -21,6 +21,10 @@
                 bytes[i] = data.charCodeAt(i);
             }
             data = bytes.buffer;
+
+            if (url.startsWith('data:image/')) {
+                data = new Blob([data]); 
+            }
         }
 
         callback(null, data);
