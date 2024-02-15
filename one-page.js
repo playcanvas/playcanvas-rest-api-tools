@@ -6,7 +6,6 @@ const btoa = require('btoa');
 const replaceString = require('replace-string');
 const lz4 = require("lz4js");
 
-
 const shared = require('./shared');
 
 const config = shared.readConfig();
