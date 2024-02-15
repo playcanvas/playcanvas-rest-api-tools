@@ -12,7 +12,7 @@ Currently they are:
 All downloaded files can be found in `temp/out`.
 
 ## Requirements
-Install [Node JS (v12+)](https://nodejs.org/en/download/)
+Install [Node JS (v20+)](https://nodejs.org/en/download/)
 
 ## Setup
 1. Clone this repo
@@ -48,7 +48,7 @@ This uses the [Download App REST API](https://developer.playcanvas.com/en/user-m
 
 It will unzip the build, add the [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) rules to the `index.html` file and rezip the project.
 
-Please configure the CSP lists in `config.json` under `csp`. There is an option to also patch the preload bundles. To do so, set `patch_preload_bundles` to be true. 
+Please configure the CSP lists in `config.json` under `csp`. There is an option to also patch the preload bundles. To do so, set `patch_preload_bundles` to be true.
 
 ### Usage
 1. `npm run csp`
@@ -184,7 +184,7 @@ The option can be found in `config.json` under `one_page`. Set `snapchat_cta` to
 
 #### Compress engine code
 
-Compresses the engine file to save 500KB on the final file size, leaving more room for games assets. Especially with playable ad networks only allowing 2MB for a single HTML file. 
+Compresses the engine file to save 500KB on the final file size, leaving more room for games assets. Especially with playable ad networks only allowing 2MB for a single HTML file.
 
 This should only be used if you need the extra space as it adds extra initialisation time to decompress the engine code at runtime. Benchmarks below:
 

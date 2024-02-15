@@ -1,0 +1,11 @@
+{
+  "name": "lz4-browsify",
+  "version": "1.0.0",
+  "description": "Packages needed to build a browserify version of lz4js with Buffer support",
+  "main": "main.js",
+  "author": "support@playcanvas.com",
+  "license": "MIT",
+  "dependencies": {
+    "lz4js": "^0.2.0"
+  }
+}
