@@ -1,4 +1,12 @@
 (function () {
+    // Patch out supportsImageBitmap as that doesn't load some images when XHR is also patched out
+    // We override the setting in configure before we load assets
+    var oldAppConfigure = pc.Application.prototype.configure;
+    pc.Application.prototype.configure = function (json, callback) {
+      this.graphicsDevice.supportsImageBitmap = false;
+      oldAppConfigure.call(this, json, callback);
+    };
+
     pc.Http.prototype.get = function get(url, options, callback) {
         if (typeof options === "function") {
             callback = options;
