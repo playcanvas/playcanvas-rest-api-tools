@@ -56,6 +56,8 @@ function inlineAssets(projectPath) {
 
                 // Patch the engine app configure function to take a JSON object instead of a URL
                 // so we don't need to Base64 the config.json and take another ~30% hit on file size
+                // This patch should be done after XHR patch because the XHR patch depends on the configure patch
+                // Patching is done last in, first out so it gets added to the top of the script order in the HTML
                 console.log("↪️ Adding app configure engine patch");
                 addPatchFile('one-page-app-configure-json.js');
 
