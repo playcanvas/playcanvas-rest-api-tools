@@ -3,8 +3,8 @@
     // We override the setting in configure before we load assets
     var oldAppConfigure = pc.Application.prototype.configure;
     pc.Application.prototype.configure = function (json, callback) {
-      this.graphicsDevice.supportsImageBitmap = false;
-      oldAppConfigure.call(this, json, callback);
+        this.graphicsDevice.supportsImageBitmap = false;
+        oldAppConfigure.call(this, json, callback);
     };
 
     pc.Http.prototype.get = function get(url, options, callback) {
