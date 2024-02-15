@@ -4,7 +4,8 @@ const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
-const lz4 = require('lz4');
+const lz4 = require("lz4js");
+
 
 const shared = require('./shared');
 
@@ -349,25 +350,22 @@ function inlineAssets(projectPath) {
                     console.log("↪️ Compressing the engine file");
                     var filepath = path.resolve(projectPath, 'playcanvas-stable.min.js');
                     var fileContent = fs.readFileSync(filepath, 'utf-8');
-                    var compressedArray = lz4.encode(fileContent);
-
+                    var compressedArray = lz4.compress(Buffer.from(fileContent));
                     fileContent = Buffer.from(compressedArray).toString('base64');
 
                     // Add the decompression code wrapper and loader for the engine where '[code]' will be replaced with
                     // the Base64 string
                     // (function() {
-                    //     var lz4 = require('lz4');
-                    //     var Buffer = require('buffer').Buffer;
                     //     var engineB64 = '[code]';
                     //     var compressed = new Buffer(engineB64, 'base64');
-                    //     var engineContents = lz4.decode(compressed)
+                    //     var engineContents = Buffer.from(lz4.decompress(compressed)).toString();
                     //     var element = document.createElement('script');
                     //     element.async = false;
                     //     element.innerText = engineContents;
                     //     document.head.insertBefore(element, document.head.children[3]);
                     // })();
 
-                    var wrapperCode = '!function(){var e=require("lz4"),r=require("buffer").Buffer,o=new r("[code]","base64"),c=e.decode(o);var a=document.createElement("script");a.async=!1,a.innerText=c,document.head.insertBefore(a,document.head.children[3])}();';
+                    var wrapperCode = '!function(){window.t = performance.now();var e=new Buffer("[code]","base64"),n=Buffer.from(lz4.decompress(e)).toString(),r=document.createElement("script");r.async=!1,r.innerText=n,document.head.insertBefore(r,document.head.children[3]);console.log(performance.now() - window.t)}();';
                     wrapperCode = wrapperCode.replace('[code]', fileContent);
                     fs.writeFileSync(filepath, wrapperCode);
                 }
@@ -477,11 +475,14 @@ async function packageFiles (projectPath) {
     });
 }
 
+var zipLocation = path.resolve(__dirname, 'temp/downloads' + "/" + 'File Audit' + '_Download.zip');
+
 
 // Force not to concatenate scripts as they need to be inlined
-config.playcanvas.scripts_concatenate = false;
-shared.downloadProject(config, "temp/downloads")
-    .then((zipLocation) => shared.unzipProject(zipLocation, 'contents') )
+//config.playcanvas.scripts_concatenate = false;
+//shared.downloadProject(config, "temp/downloads")
+   // .then((zipLocation) =>
+      shared.unzipProject(zipLocation, 'contents')
     .then(inlineAssets)
     .then(packageFiles)
     .then(outputHtml => console.log("Success", outputHtml))
