@@ -4,7 +4,7 @@ const base64js = require('base64-js');
 const { minify } = require('terser');
 const btoa = require('btoa');
 const replaceString = require('replace-string');
-const lz4 = require("lz4js");
+const lz4 = require('lz4js');
 
 const shared = require('./shared');
 
