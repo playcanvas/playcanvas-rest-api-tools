@@ -365,7 +365,7 @@ function inlineAssets(projectPath) {
                     //     document.head.insertBefore(element, document.head.children[3]);
                     // })();
 
-                    var wrapperCode = '!function(){window.t = performance.now();var e=new Buffer("[code]","base64"),n=Buffer.from(lz4.decompress(e)).toString(),r=document.createElement("script");r.async=!1,r.innerText=n,document.head.insertBefore(r,document.head.children[3]);console.log(performance.now() - window.t)}();';
+                    var wrapperCode = '!function(){var e=new Buffer("[code]","base64"),n=Buffer.from(lz4.decompress(e)).toString(),r=document.createElement("script");r.async=!1,r.innerText=n,document.head.insertBefore(r,document.head.children[3])}();';
                     wrapperCode = wrapperCode.replace('[code]', fileContent);
                     fs.writeFileSync(filepath, wrapperCode);
                 }
@@ -475,14 +475,11 @@ async function packageFiles (projectPath) {
     });
 }
 
-var zipLocation = path.resolve(__dirname, 'temp/downloads' + "/" + 'File Audit' + '_Download.zip');
-
-
 // Force not to concatenate scripts as they need to be inlined
-//config.playcanvas.scripts_concatenate = false;
-//shared.downloadProject(config, "temp/downloads")
-   // .then((zipLocation) =>
-      shared.unzipProject(zipLocation, 'contents')
+config.playcanvas.scripts_concatenate = false;
+
+shared.downloadProject(config, "temp/downloads")
+    .then((zipLocation) => shared.unzipProject(zipLocation, 'contents'))
     .then(inlineAssets)
     .then(packageFiles)
     .then(outputHtml => console.log("Success", outputHtml))
