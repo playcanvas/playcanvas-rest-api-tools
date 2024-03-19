@@ -128,7 +128,7 @@ function inlineAssets(projectPath) {
                 // cssElement.innerHTML =css;
                 // document.head.appendChild(cssElement);
 
-                regex = /if \(document\.head\.querySelector\) {[\s\S]*?}/;
+                regex = /document\.head\.querySelector\('style'\)\.innerHTML \+= css;/;
                 contents = contents.replace(regex, 'cssElement=document.createElement("style"),cssElement.innerHTML=css,document.head.appendChild(cssElement);');
 
                 fs.writeFileSync(location, contents);
