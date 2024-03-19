@@ -125,10 +125,10 @@ function inlineAssets(projectPath) {
                 // // Adds the following code for better compatibility with ad networks on accessing the CSS styles
                 // // in configureCss()
                 // cssElement = document.createElement('style');
-                // cssElement.innerHTML =css;
+                // cssElement.innerHTML = css;
                 // document.head.appendChild(cssElement);
 
-                regex = /if \(document\.head\.querySelector\) {[\s\S]*?}/;
+                regex = /document\.head\.querySelector\('style'\)\.innerHTML \+= css;/;
                 contents = contents.replace(regex, 'cssElement=document.createElement("style"),cssElement.innerHTML=css,document.head.appendChild(cssElement);');
 
                 fs.writeFileSync(location, contents);
@@ -479,7 +479,7 @@ async function packageFiles (projectPath) {
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
 
-shared.downloadProject(config, "temp/downloads")
+ shared.downloadProject(config, "temp/downloads")
     .then((zipLocation) => shared.unzipProject(zipLocation, 'contents'))
     .then(inlineAssets)
     .then(packageFiles)
