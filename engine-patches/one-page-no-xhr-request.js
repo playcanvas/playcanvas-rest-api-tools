@@ -13,6 +13,11 @@
             options = {};
         }
 
+        if (typeof(url) === 'object') {
+            callback(null, url);
+            return;
+        }
+
         var index = url.indexOf(',');
         var base64 = url.slice(index + 1);
         var data = window.atob(base64);
