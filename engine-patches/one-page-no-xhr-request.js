@@ -13,6 +13,7 @@
             options = {};
         }
 
+        // If the url is an object, just return it
         if (typeof(url) === 'object') {
             callback(null, url);
             return;
