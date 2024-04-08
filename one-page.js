@@ -38,6 +38,13 @@ function inlineAssets(projectPath) {
             };
 
             (function () {
+               // Patch the http get function to check for an object being passed to it and return immediately
+                // so we don't need to Base64 the config.json and take another ~30% hit on file size
+                // This patch should be done before XHR patch because this wraps around the same function that XHR patch patches
+                // Patching is done last in, first out so it gets added to the top of the script order in the HTML
+                console.log("↪️ Adding app http get engine patch");
+                addPatchFile('one-page-http-get.js');
+
                 // XHR request patch. We may need to not use XHR due to restrictions on the hosting service
                 // such as Facebook playable ads. If that's the case, we will add a patch to override http.get
                 // and decode the base64 URL ourselves
@@ -53,13 +60,6 @@ function inlineAssets(projectPath) {
                     console.log("↪️ Adding inline game script engine patch");
                     addPatchFile('one-page-inline-game-scripts.js');
                 }
-
-                // Patch the engine app configure function to take a JSON object instead of a URL
-                // so we don't need to Base64 the config.json and take another ~30% hit on file size
-                // This patch should be done after XHR patch because the XHR patch depends on the configure patch
-                // Patching is done last in, first out so it gets added to the top of the script order in the HTML
-                console.log("↪️ Adding app configure engine patch");
-                addPatchFile('one-page-app-configure-json.js');
 
                 // MRAID support needs to include the mraid.js file and also force the app to use filltype NONE
                 // so that it fits in the canvas that is sized by the MRAID implementation on the app. This requires
@@ -400,7 +400,7 @@ function inlineAssets(projectPath) {
 
                     // If it is already minified then don't try to minify it again
                     if (!url.endsWith('.min.js')) {
-                        fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
+                        //fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
                     }
 
                     indexContents = replaceString(indexContents, element[0], '<script>' + fileContent + '</script>');
@@ -479,7 +479,7 @@ async function packageFiles (projectPath) {
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
 
-shared.downloadProject(config, "temp/downloads")
+ shared.downloadProject(config, "temp/downloads")
     .then((zipLocation) => shared.unzipProject(zipLocation, 'contents'))
     .then(inlineAssets)
     .then(packageFiles)
