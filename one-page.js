@@ -400,7 +400,7 @@ function inlineAssets(projectPath) {
 
                     // If it is already minified then don't try to minify it again
                     if (!url.endsWith('.min.js')) {
-                        //fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
+                        fileContent = (await minify(fileContent, { keep_fnames: true, ecma: '5' })).code;
                     }
 
                     indexContents = replaceString(indexContents, element[0], '<script>' + fileContent + '</script>');
