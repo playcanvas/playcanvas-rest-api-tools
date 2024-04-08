@@ -479,7 +479,7 @@ async function packageFiles (projectPath) {
 // Force not to concatenate scripts as they need to be inlined
 config.playcanvas.scripts_concatenate = false;
 
- shared.downloadProject(config, "temp/downloads")
+shared.downloadProject(config, "temp/downloads")
     .then((zipLocation) => shared.unzipProject(zipLocation, 'contents'))
     .then(inlineAssets)
     .then(packageFiles)
