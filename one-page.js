@@ -38,7 +38,7 @@ function inlineAssets(projectPath) {
             };
 
             (function () {
-               // Patch the http get function to check for an object being passed to it and return immediately
+                // Patch the http get function to check for an object being passed to it and return immediately
                 // so we don't need to Base64 the config.json and take another ~30% hit on file size
                 // This patch should be done before XHR patch because this wraps around the same function that XHR patch patches
                 // Patching is done last in, first out so it gets added to the top of the script order in the HTML
