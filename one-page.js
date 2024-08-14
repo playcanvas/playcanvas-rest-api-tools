@@ -104,7 +104,7 @@ function inlineAssets(projectPath) {
                 var location = path.resolve(projectPath, "__start__.js");
                 var contents = fs.readFileSync(location, 'utf-8');
 
-                var regex = /if \(PRELOAD_MODULES.length > 0\).*configure\(\);\n    }/s;
+                var regex = /if \(window.PRELOAD_MODULES.length\) \{\n\s+loadModules\(window.PRELOAD_MODULES, window.ASSET_PREFIX, \(\) \=\> \{\n\s+configure\(\(\) \=\> \{\n\s+console.timeEnd\('start'\)\;\n\s+\}\)\;\n\s+\}\)\n\s+\} else \{\n\s+configure\(\)\;\n\s+\}/s;
 
                 if (config.one_page.mraid_support) {
                     // // Adds the following code but minified
