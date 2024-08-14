@@ -163,6 +163,8 @@ function inlineAssets(projectPath) {
                 var configJson = JSON.parse(contents);
                 var assets = configJson.assets;
 
+                var sizeReport = [];
+
                 for (const [key, asset] of Object.entries(assets)) {
                     if (!Object.prototype.hasOwnProperty.call(assets, key)) {
                         continue;
@@ -256,12 +258,29 @@ function inlineAssets(projectPath) {
                         b64 = base64js.fromByteArray(ba);
                     }
 
+                    sizeReport.push({
+                        name: asset.name,
+                        size: b64.length
+                    });
+
                     // As we are using an escaped URL, we will search using the original URL
                     asset.file.url = mimeprefix + ';base64,' + b64;
 
                     // Remove the hash to prevent appending to the URL
                     asset.file.hash = "";
                 };
+
+                if (process.argv.includes('--size-report')) {
+                    sizeReport.sort((a, b) => b.size - a.size);
+                    console.log("↪️ Size Report");
+                    sizeReport.forEach((item) => {
+                        console.log("   " + item.name + " - " + item.size + " bytes");
+                    });
+
+                    const totalSize = sizeReport.reduce((acc, item) => acc + item.size, 0);
+                    console.log("   Total size: " + totalSize + " bytes");
+                    console.log("   Total asset size in MB: " + (totalSize / 1024 / 1024).toFixed(2) + " MB");
+                }
 
                 fs.writeFileSync(location, JSON.stringify(configJson));
             })();
