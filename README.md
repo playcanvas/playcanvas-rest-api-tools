@@ -219,6 +219,11 @@ $ npm run one-page
     Success someProject.html
 ```
 
+#### Testing
+Please use the following command to create the most common outputs for the one-page job with public projects owned by the PlayCanvas team.
+
+1. `npm run test-one-page`
+
 ### Asset Size Report
 To get a size report of the one-page job, use the following command:
 1. `npm run one-page --size-report`
@@ -233,12 +238,6 @@ Size Report
    Total size: 500848 bytes
    Total asset size in MB: 0.48 MB
 ```
-
-#### Testing
-Please use the following command to create the most common outputs for the one-page job with public projects owned by the PlayCanvas team.
-
-1. `npm run test-one-page`
-
 
 ## Cordova Publish
 
