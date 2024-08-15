@@ -224,6 +224,20 @@ Please use the following command to create the most common outputs for the one-p
 
 1. `npm run test-one-page`
 
+### Asset Size Report
+To get a size report of the one-page job, use the following command:
+1. `npm run one-page --size-report`
+#### Example
+```
+Size Report
+   Character.glb - 311472 bytes
+   Character.png - 165976 bytes
+   MaterialShader.js - 14980 bytes
+   Fire-Noise.jpg - 6696 bytes
+   Sound.mp3 - 1724 bytes
+   Total size: 500848 bytes
+   Total asset size in MB: 0.48 MB
+```
 
 ## Cordova Publish
 
